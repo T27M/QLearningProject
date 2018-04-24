@@ -1,0 +1,11 @@
+{
+    "debug": false,
+    "log_output": false,
+    "log_path": "./log",
+    "Environment": {
+        "episodes": 0,
+        "render": false,
+        "action_repeat": 0,
+        "gym_environment": "MsPacman-v0"
+    }
+}

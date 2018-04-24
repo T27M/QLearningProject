@@ -1,0 +1,10 @@
+{
+    "debug": false,
+    "log_output": false,
+    "log_path": "./log",
+    "Test": {
+        "test_config_number": 1,
+        "test_config_string": "1",
+        "test_config_float": 1.0
+    }
+}

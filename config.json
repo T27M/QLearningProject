@@ -1,0 +1,20 @@
+{
+    "debug": true,
+    "log_output": false,
+    "log_path": "./log",
+    "QAgent": {
+        "discount_factor": 0.95,
+        "learning_rate": 0.8,
+        "random_action": 0.1
+    },
+    "Environment": {
+        "episodes": 5,
+        "render": true,
+        "action_repeat": 4,
+        "gym_environment": "MsPacman-v0"
+    },
+    "FeatureProcessor": {
+        "play_area_width": 160,
+        "play_area_height": 171
+    }
+}
