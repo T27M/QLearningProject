@@ -42,6 +42,16 @@ class QAgent(ConfigBase):
         pass
 
     def update_q_table(self, state, new_state, action, reward):
+        """ Updates the value of a state based on the Q-Learning algorithm
+         ((1 - learning_rate) * QTable[s, action]) + learning_rate * (reward + discount_factor * np.max(QTable[s1]))
+
+
+        Arguments:
+            state {list} -- state vector
+            new_state {list} -- new state vector
+            action {string} -- action taken to move between states
+            reward {int} -- reward gained from changing from s to s1
+        """
         cur_q_value = self.__QTable.get_q_table_value(state, action)
         new_state_max_q_value = self.__QTable.get_max_q_table_value(new_state)
 
@@ -54,4 +64,3 @@ class QAgent(ConfigBase):
         self.__QTable.update_q_table_value(state, action, new_q_value)
 
         # Update Q-Table
-        #  ((1 - self.learning_rate) * self.QTable[ob, action]) + self.learning_rate * (reward + self.discount_factor * np.max(self.QTable[ob1, :]))
