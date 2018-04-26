@@ -32,12 +32,6 @@ class TestQTableEntry(unittest.TestCase):
         with self.assertRaises(ValueError):
             qtable_entry.next_vector()
 
-    def test_given_new_qtable_entry_add_new_state_vector_sucessfully(self):
-        state = [1, 2, 3]
-        qtable_entry = QTableEntry(state)
-
-        pass
-
     def test_given_identical_qtable_entry_add_new_state_vector_raises_exception(self):
         state1 = [1, 2, 3]
         qtable_entry1 = QTableEntry(state1)
@@ -47,6 +41,14 @@ class TestQTableEntry(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             qtable_entry1.add_next(qtable_entry2)
+
+    def test_given_new_qtable_entry_update_q_value_and_check_assert_new_max(self):
+        state = [1, 2, 3]
+        qtable_entry = QTableEntry(state)
+
+        qtable_entry.set_q_value('UP', 1)
+
+        self.assertEqual(1, qtable_entry.get_q_value_max())
 
 
 if __name__ == '__main__':

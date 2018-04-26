@@ -45,4 +45,11 @@ class QAgent(object):
         # Update Q-Table
         # self.QTable[ob, action] = ((1 - self.learning_rate) * self.QTable[ob, action]) + self.learning_rate * (reward + self.discount_factor * np.max(self.QTable[ob1, :]))
 
+        # Get the current q_value for state action
+
+        # Update Q-Table
+        # self.QTable[ob, action] = ((1 - self.learning_rate) * self.QTable[ob, action]) + self.learning_rate * (reward + self.discount_factor * np.max(self.QTable[ob1, :]))
+
+        # updated_q_value = ((1 - self.learning_rate) * state_q_value +
+
         pass

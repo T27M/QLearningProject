@@ -1,4 +1,5 @@
 import hashlib
+import random
 
 
 class QTableEntry(object):
@@ -9,7 +10,14 @@ class QTableEntry(object):
 
         self.__hash = hash_object.hexdigest()
         self.__state = state
-        self.__q_values = []
+
+        self.__q_values = {
+            'UP': 0.0,
+            'LEFT': 0.0,
+            'RIGHT': 0.0,
+            'DOWN': 0.0
+        }
+
         self.__next_state = None
         pass
 
@@ -27,6 +35,26 @@ class QTableEntry(object):
 
     def compare_state(self, other):
         return self.__state_str == other.get_state_str()
+
+    def get_q_values(self):
+        return self.__q_values
+
+    def get_q_value(self, action):
+        return self.__q_values[action]
+
+    def set_q_value(self, action, value):
+        self.__q_values[action] = value
+
+    def get_q_value_max(self):
+        """ Finds the max qvalue from the qtable for all actions
+
+        Returns:
+            float -- the qvalue
+        """
+        max_val = max(self.__q_values.values())
+        keys = (k for k, v in self.__q_values.items() if v == max_val)
+
+        return self.get_q_value(self.__iter_sample_fast(keys, 1)[0])
 
     def has_next_vector(self):
         """ Used to check for a hash collision
@@ -71,3 +99,20 @@ class QTableEntry(object):
             raise ValueError("Next QTableEntry must not be identical")
 
         self.__next_state = q_table_entry
+
+    # https://stackoverflow.com/questions/12581437/python-random-sample-with-a-generator-iterable-iterator?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    def __iter_sample_fast(self, iterable, samplesize):
+        results = []
+        iterator = iter(iterable)
+        # Fill in the first samplesize elements:
+        try:
+            for _ in range(samplesize):
+                results.append(next(iterator))
+        except StopIteration:
+            raise ValueError("Sample larger than population.")
+        random.shuffle(results)  # Randomize their positions
+        for i, v in enumerate(iterator, samplesize):
+            r = random.randint(0, i)
+            if r < samplesize:
+                results[r] = v  # at a decreasing rate, replace random items
+        return results
