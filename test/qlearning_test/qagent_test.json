@@ -3,8 +3,8 @@
     "log_output": false,
     "log_path": "./log",
     "QAgent": {
-        "discount_factor": 0.1,
-        "learning_rate": 0.1,
+        "discount_factor": 0.95,
+        "learning_rate": 0.8,
         "random_action": 0.1
     }
 }

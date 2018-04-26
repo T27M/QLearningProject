@@ -5,6 +5,7 @@ import time
 import tflearn
 from tflearn.data_utils import image_preloader
 import os
+from core.configbase import ConfigBase
 
 # RGB Colors
 PACMAN_COLOR = (210, 164, 74)  # Orange/Yellow
@@ -73,13 +74,12 @@ pickup = [(8, 15), (8, 147), (148, 146), (148, 14),
 # [(41, (167, 255)), (60, (110, 255)), (60, (130, 255)), (160, (0, 255))]
 
 
-class FeatureProcessor(object):
+class FeatureProcessor(ConfigBase):
     def __init__(self, config):
-        self.__config = config.get_config(type(self).__name__)
-        self.__debug = self.__config['debug']
+        super().__init__(config)
 
-        self.__play_area_width = config['play_area_width']
-        self.__play_area_height = config['play_area_height']
+        self.__play_area_width = self._config['play_area_width']
+        self.__play_area_height = self._config['play_area_height']
 
     def __find_grey(self, img, color):
         x_bit = color[0]
@@ -111,7 +111,7 @@ class FeatureProcessor(object):
         pixel_blue_ghost = self.__find_grey(img, GHOST_BLUE_G)
         pixel_purple_ghost = self.__find_grey(img, GHOST_PURPLE_G)
 
-        if self.__debug:
+        if self._debug:
             print(self.__get_colors(img))
             print("Pacman pixel at: " + str(pixel_pacman))
 

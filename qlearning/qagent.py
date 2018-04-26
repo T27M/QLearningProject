@@ -4,25 +4,28 @@ from core.configbase import ConfigBase
 # Loss = ∑(Q-target - Q)²
 
 
-class QAgent(object):
+class QAgent(ConfigBase):
     def __init__(self, config):
 
-        # ConfigBase.__init__(config=config)
+        super().__init__(config=config)
 
         # State table
         self.__QTable = QTable()
 
         # gamma - encourages rewards sooner > later
-        self.__discount_factor = config['discount_factor']
+        self.__discount_factor = self._config['discount_factor']
 
         # alpha - how much we update per action: 0 < a < 1
-        self.__learning_rate = config['learning_rate']
+        self.__learning_rate = self._config['learning_rate']
 
         # epsilon - exploration
-        self.__random_action = config['random_action']
+        self.__random_action = self._config['random_action']
 
     def get_q_values(self, state):
         return self.__QTable.get_q_table_values(state)
+
+    def get_q_value(self, state, action):
+        return self.__QTable.get_q_table_value(state, action)
 
     def predict(self, state):
         pass
