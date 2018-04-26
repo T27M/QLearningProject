@@ -1,0 +1,8 @@
+{
+    "debug": false,
+    "log_output": false,
+    "log_path": "./log",
+    "ExampleDerivedClass": {
+        "test_value": 1.0
+    }
+}

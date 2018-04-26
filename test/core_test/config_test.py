@@ -25,6 +25,9 @@ class ConfigTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             config.get_config('Invalid')
 
+    def test_method(self):
+        self.assertEquals(1, 1)
+
 
 if __name__ == '__main__':
     unittest.main()

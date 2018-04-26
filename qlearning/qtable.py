@@ -40,6 +40,14 @@ class QTable(object):
         self.__get_q_table_entry(state).set_q_value(action, new_value)
 
     def get_max_q_table_value(self, state):
+        """ Get max qvalue for a given state
+
+        Arguments:
+            state {list} -- state vector
+
+        Returns:
+            float -- the qvalue
+        """
         return self.__get_q_table_entry(state).get_q_value_max()
 
     def __get_q_table_entry(self, state):

@@ -1,20 +1,14 @@
 import numpy as np
 from qlearning.qtable import QTable
-
-# Holds a Q-Table with state to action pairs
-
-# Allows the use of a hashing function to
-
-# Process to add
-# Take obs and hash
-# Check if hash exists in qtable
-#
-
+from core.configbase import ConfigBase
 # Loss = ∑(Q-target - Q)²
 
 
 class QAgent(object):
     def __init__(self, config):
+
+        # ConfigBase.__init__(config=config)
+
         # State table
         self.__QTable = QTable()
 
@@ -27,7 +21,10 @@ class QAgent(object):
         # epsilon - exploration
         self.__random_action = config['random_action']
 
-    def predict(self, observation):
+    def get_q_values(self, state):
+        return self.__QTable.get_q_table_values(state)
+
+    def predict(self, state):
         pass
 
     def __greedy_act(self, ob, i):
@@ -41,15 +38,17 @@ class QAgent(object):
         # return np.argmax(self.QTable[ob,:] + np.random.randn(1, self.action_space.n) * ( 1. / (i + 1)))
         pass
 
-    def __update_q_table(self, ob, ob1, action, reward):
+    def update_q_table(self, state, new_state, action, reward):
+        cur_q_value = self.__QTable.get_q_table_value(state, action)
+        new_state_max_q_value = self.__QTable.get_max_q_table_value(new_state)
+
+        # Calculate the new qvalue with the q-learning algorithm
+        new_q_value = ((1 - self.__learning_rate) * cur_q_value) + \
+            self.__learning_rate * \
+            (reward + self.__discount_factor * new_state_max_q_value)
+
         # Update Q-Table
-        # self.QTable[ob, action] = ((1 - self.learning_rate) * self.QTable[ob, action]) + self.learning_rate * (reward + self.discount_factor * np.max(self.QTable[ob1, :]))
-
-        # Get the current q_value for state action
+        self.__QTable.update_q_table_value(state, action, new_q_value)
 
         # Update Q-Table
-        # self.QTable[ob, action] = ((1 - self.learning_rate) * self.QTable[ob, action]) + self.learning_rate * (reward + self.discount_factor * np.max(self.QTable[ob1, :]))
-
-        # updated_q_value = ((1 - self.learning_rate) * state_q_value +
-
-        pass
+        #  ((1 - self.learning_rate) * self.QTable[ob, action]) + self.learning_rate * (reward + self.discount_factor * np.max(self.QTable[ob1, :]))
