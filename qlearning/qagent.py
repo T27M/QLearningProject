@@ -1,6 +1,9 @@
 import numpy as np
+import random
 from qlearning.qtable import QTable
 from core.configbase import ConfigBase
+
+
 # Loss = ∑(Q-target - Q)²
 
 
@@ -28,16 +31,22 @@ class QAgent(ConfigBase):
         return self.__QTable.get_q_table_value(state, action)
 
     def predict(self, state):
-        pass
+        return self.__epsilon_greedy_act(state)
 
-    def __greedy_act(self, ob, i):
-        # if self.random_action > random.random():
+    def __epsilon_greedy_act(self, state):
+        if self.__random_action > random.random():
             # explore enviroment
-            # return self.action_space.sample()
-        # else:
-            # greey action
-            # return np.argmax(self.QTable[ob,:])
+            actions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
+            random_action = random.sample(actions, 1)
 
+            return random_action[0]
+        else:
+            _, action = self.__QTable.get_max_q_table_value(state)
+
+            # greey action
+            return action
+
+        # Below adds noise (type? why?)
         # return np.argmax(self.QTable[ob,:] + np.random.randn(1, self.action_space.n) * ( 1. / (i + 1)))
         pass
 
@@ -53,7 +62,8 @@ class QAgent(ConfigBase):
             reward {int} -- reward gained from changing from s to s1
         """
         cur_q_value = self.__QTable.get_q_table_value(state, action)
-        new_state_max_q_value = self.__QTable.get_max_q_table_value(new_state)
+        new_state_max_q_value, _ \
+            = self.__QTable.get_max_q_table_value(new_state)
 
         # Calculate the new qvalue with the q-learning algorithm
         new_q_value = ((1 - self.__learning_rate) * cur_q_value) + \

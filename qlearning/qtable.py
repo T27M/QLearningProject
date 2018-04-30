@@ -53,10 +53,10 @@ class QTable(object):
     def __get_q_table_entry(self, state):
         # Convert state to temporary entry to use for searching
         q_table_entry = QTableEntry(state)
-        _hash = q_table_entry.get_hash()
+        key = q_table_entry.get_state_str()
 
         # Check if entry exists, if not create
-        if(_hash not in self.__q_table):
-            self.__q_table[_hash] = q_table_entry
+        if(key not in self.__q_table):
+            self.__q_table[key] = q_table_entry
 
-        return self.__q_table[_hash]
+        return self.__q_table[key]
