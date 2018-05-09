@@ -31,7 +31,9 @@ class QAgent(ConfigBase):
         self.__QTable.save_q_table()
 
     def load_q_table(self):
-        self.__QTable.load_q_table('qtable.json')
+        self.__QTable.load_q_table('./data/qtable.json')
+
+        print("Loaded: " + str(self.get_q_table_len()) + " keys")
 
     def get_q_table_len(self):
         return self.__QTable.get_q_table_len()
@@ -67,8 +69,8 @@ class QAgent(ConfigBase):
 
     def update_q_table(self, state, new_state, action, reward):
         """ Updates the value of a state based on the Q-Learning algorithm
-         ((1 - learning_rate) * QTable[s, action]) + learning_rate * (reward + discount_factor * np.max(QTable[s1]))
-
+                q(state)[action] = q(state, action) + \
+                    alpha * (reward + gamma * np.max(q(next_state)) - q(state, action))
 
         Arguments:
             state {list} -- state vector
@@ -81,13 +83,14 @@ class QAgent(ConfigBase):
             = self.__QTable.get_max_q_table_value(new_state)
 
         # Calculate the new qvalue with the q-learning algorithm
-        new_q_value = ((1 - self.__learning_rate) * cur_q_value) + \
-            self.__learning_rate * \
-            (reward + self.__discount_factor * new_state_max_q_value)
+        new_q_value = \
+            cur_q_value + self.__learning_rate * \
+            (reward + self.__discount_factor * new_state_max_q_value - cur_q_value)
 
         if self._log_output:
-            log_line = str(state) + "\t\t| " + str(action) + "\t\t| " + str(
-                reward) + "\t\t| " + str(cur_q_value) + "\t\t| " + str(new_q_value) + "\n"
+            log_line = str(state) + "\t\t| " + str(action) + "\t\t| " + \
+                str(reward) + "\t\t| " + str(cur_q_value) + \
+                "\t\t| " + str(new_q_value) + "\n"
 
             with open(self._log_path, 'a') as log:
                 log.write(log_line)

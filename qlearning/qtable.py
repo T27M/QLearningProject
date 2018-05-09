@@ -9,14 +9,17 @@ class QTable(object):
         self.__actions = actions
 
     def load_q_table(self, file_name):
-        with open(file_name, 'r') as file:
-            self.__q_table = file.read(pickle.loads(file))
+        try:
+            with open('./data/qtable.pickle', 'rb') as file:
+                self.__q_table = pickle.load(file)
+        except:
+            print("Could not load QTable")
 
     def save_q_table(self):
         print('Saving QTable...')
 
-        with open('./data/qtable.json', 'wb') as file:
-            file.write(pickle.dumps(self.__q_table))
+        with open('./data/qtable.pickle', 'wb') as file:
+            pickle.dump(self.__q_table, file)
 
     def get_q_table_len(self):
         return len(self.__q_table)

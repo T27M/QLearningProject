@@ -43,25 +43,12 @@ class QTableEntry(object):
             float -- the qvalue
         """
         max_val = max(self.__q_values.values())
-        keys = (k for k, v in self.__q_values.items() if v == max_val)
+        keys = []
 
-        action = self.__iter_sample_fast(keys, 1)[0]
+        for k, v in self.__q_values.items():
+            if v == max_val:
+                keys.append(k)
+
+        action = random.choice(keys)
 
         return self.get_q_value(action), action
-
-    # https://stackoverflow.com/questions/12581437/python-random-sample-with-a-generator-iterable-iterator?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-    def __iter_sample_fast(self, iterable, samplesize):
-        results = []
-        iterator = iter(iterable)
-        # Fill in the first samplesize elements:
-        try:
-            for _ in range(samplesize):
-                results.append(next(iterator))
-        except StopIteration:
-            raise ValueError("Sample larger than population.")
-        random.shuffle(results)  # Randomize their positions
-        for i, v in enumerate(iterator, samplesize):
-            r = random.randint(0, i)
-            if r < samplesize:
-                results[r] = v  # at a decreasing rate, replace random items
-        return results

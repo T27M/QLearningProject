@@ -12,7 +12,9 @@ env.reset()
 
 rewards = []
 
-for i in range(1000):
+q_agent.load_q_table()
+
+for i in range(5000):
 
     print('Episode: ' + str(i))
 
@@ -22,7 +24,7 @@ for i in range(1000):
 
     while(True):
 
-        env.render()
+        # env.render()
 
         # Predict action
         action = q_agent.predict(s)
@@ -41,6 +43,13 @@ for i in range(1000):
         episode_reward += reward
 
         if done:
+            q_agent.save_q_table()
+
             print("Episode reward: " + str(episode_reward))
             rewards.append(episode_reward)
+
+            with open("./data/reward.txt", "a") as myfile:
+                myfile.writelines("Episode: " + str(i) +
+                                  " | Reward: " + str(episode_reward) + "\n")
+
             break
