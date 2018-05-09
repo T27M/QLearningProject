@@ -12,8 +12,11 @@ class QAgent(ConfigBase):
 
         super().__init__(config=config)
 
+        # Actions that can be taken
+        self.__actions = self._config['actions']
+
         # State table
-        self.__QTable = QTable()
+        self.__QTable = QTable(actions=self.__actions)
 
         # gamma - encourages rewards sooner > later
         self.__discount_factor = self._config['discount_factor']
@@ -23,6 +26,15 @@ class QAgent(ConfigBase):
 
         # epsilon - exploration
         self.__random_action = self._config['random_action']
+
+    def save_q_table(self):
+        self.__QTable.save_q_table()
+
+    def load_q_table(self):
+        self.__QTable.load_q_table('qtable.json')
+
+    def get_q_table_len(self):
+        return self.__QTable.get_q_table_len()
 
     def get_q_values(self, state):
         return self.__QTable.get_q_table_values(state)
@@ -34,10 +46,17 @@ class QAgent(ConfigBase):
         return self.__epsilon_greedy_act(state)
 
     def __epsilon_greedy_act(self, state):
+        """ Determines which action is best given the state, or random action based on epsilon
+
+        Arguments:
+            state {list} -- state vector
+
+        Returns:
+            str -- the action to take
+        """
         if self.__random_action > random.random():
             # explore enviroment
-            actions = ['UP', 'DOWN', 'LEFT', 'RIGHT']
-            random_action = random.sample(actions, 1)
+            random_action = random.sample(self.__actions, 1)
 
             return random_action[0]
         else:
@@ -45,10 +64,6 @@ class QAgent(ConfigBase):
 
             # greey action
             return action
-
-        # Below adds noise (type? why?)
-        # return np.argmax(self.QTable[ob,:] + np.random.randn(1, self.action_space.n) * ( 1. / (i + 1)))
-        pass
 
     def update_q_table(self, state, new_state, action, reward):
         """ Updates the value of a state based on the Q-Learning algorithm
@@ -70,7 +85,12 @@ class QAgent(ConfigBase):
             self.__learning_rate * \
             (reward + self.__discount_factor * new_state_max_q_value)
 
-        # Update Q-Table
-        self.__QTable.update_q_table_value(state, action, new_q_value)
+        if self._log_output:
+            log_line = str(state) + "\t\t| " + str(action) + "\t\t| " + str(
+                reward) + "\t\t| " + str(cur_q_value) + "\t\t| " + str(new_q_value) + "\n"
 
-        # Update Q-Table
+            with open(self._log_path, 'a') as log:
+                log.write(log_line)
+
+                # Update Q-Table
+        self.__QTable.update_q_table_value(state, action, new_q_value)

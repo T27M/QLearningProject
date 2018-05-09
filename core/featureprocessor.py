@@ -2,8 +2,8 @@ import PIL
 from PIL import Image
 import numpy as np
 import time
-import tflearn
-from tflearn.data_utils import image_preloader
+import cv2
+import sys
 import os
 from core.configbase import ConfigBase
 
@@ -102,59 +102,60 @@ class FeatureProcessor(ConfigBase):
         # Find pickups
         pickup_vector = self.__check_pickup_squares(img)
 
-        # Find Pacman
-        pixel_pacman = self.__find_grey(img, PACMAN_GREY)
+        if(True):
+            # Find Pacman
+            pixel_pacman = self.__find_grey(img, PACMAN_GREY)
 
-        # Find Ghosts
-        pixel_red_ghost = self.__find_grey(img, GHOST_RED_G)
-        pixel_orange_ghost = self.__find_grey(img, GHOST_ORANGE_G)
-        pixel_blue_ghost = self.__find_grey(img, GHOST_BLUE_G)
-        pixel_purple_ghost = self.__find_grey(img, GHOST_PURPLE_G)
+            # Find Ghosts
+            pixel_red_ghost = self.__find_grey(img, GHOST_RED_G)
+            pixel_orange_ghost = self.__find_grey(img, GHOST_ORANGE_G)
+            pixel_blue_ghost = self.__find_grey(img, GHOST_BLUE_G)
+            pixel_purple_ghost = self.__find_grey(img, GHOST_PURPLE_G)
 
-        if self._debug:
-            print(self.__get_colors(img))
-            print("Pacman pixel at: " + str(pixel_pacman))
+            if self._debug:
+                print(self.__get_colors(img))
+                print("Pacman pixel at: " + str(pixel_pacman))
 
-            if pixel_red_ghost is not None:
-                print("Red Ghost pixel at: " + str(pixel_red_ghost))
-            else:
-                print("Red Ghost flicker")
+                if pixel_red_ghost is not None:
+                    print("Red Ghost pixel at: " + str(pixel_red_ghost))
+                else:
+                    print("Red Ghost flicker")
 
-            if pixel_orange_ghost is not None:
-                print("Orange Ghost pixel at: " + str(pixel_orange_ghost))
-            else:
-                print("Orange Ghost flicker")
+                if pixel_orange_ghost is not None:
+                    print("Orange Ghost pixel at: " + str(pixel_orange_ghost))
+                else:
+                    print("Orange Ghost flicker")
 
-            if pixel_blue_ghost is not None:
-                print("Blue Ghost pixel at: " + str(pixel_blue_ghost))
-            else:
-                print("Blue Ghost flicker")
+                if pixel_blue_ghost is not None:
+                    print("Blue Ghost pixel at: " + str(pixel_blue_ghost))
+                else:
+                    print("Blue Ghost flicker")
 
-            if pixel_purple_ghost is not None:
-                print("Purple Ghost pixel at: " + str(pixel_purple_ghost))
-            else:
-                print("Purple Ghost flicker")
+                if pixel_purple_ghost is not None:
+                    print("Purple Ghost pixel at: " + str(pixel_purple_ghost))
+                else:
+                    print("Purple Ghost flicker")
 
-        if pixel_pacman is None:
-            pixel_pacman = (0, 0)
+            if pixel_pacman is None:
+                pixel_pacman = (0, 0)
 
-        if pixel_red_ghost is None:
-            pixel_red_ghost = (0, 0)
+            if pixel_red_ghost is None:
+                pixel_red_ghost = (0, 0)
 
-        if pixel_orange_ghost is None:
-            pixel_orange_ghost = (0, 0)
+            if pixel_orange_ghost is None:
+                pixel_orange_ghost = (0, 0)
 
-        if pixel_blue_ghost is None:
-            pixel_blue_ghost = (0, 0)
+            if pixel_blue_ghost is None:
+                pixel_blue_ghost = (0, 0)
 
-        if pixel_purple_ghost is None:
-            pixel_purple_ghost = (0, 0)
+            if pixel_purple_ghost is None:
+                pixel_purple_ghost = (0, 0)
 
-        entities = [pixel_pacman[0], pixel_pacman[1],
-                    pixel_red_ghost[0], pixel_red_ghost[1],
-                    pixel_orange_ghost[0], pixel_orange_ghost[1],
-                    pixel_blue_ghost[0], pixel_blue_ghost[1],
-                    pixel_purple_ghost[0], pixel_purple_ghost[1]]
+            entities = [pixel_pacman[0], pixel_pacman[1],
+                        pixel_red_ghost[0], pixel_red_ghost[1],
+                        pixel_orange_ghost[0], pixel_orange_ghost[1],
+                        pixel_blue_ghost[0], pixel_blue_ghost[1],
+                        pixel_purple_ghost[0], pixel_purple_ghost[1]]
 
         return entities + pickup_vector
 

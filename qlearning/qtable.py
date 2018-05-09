@@ -1,10 +1,25 @@
-import hashlib
+import json
+import pickle
 from qlearning.qtableentry import QTableEntry
 
 
 class QTable(object):
-    def __init__(self):
+    def __init__(self, actions):
         self.__q_table = {}
+        self.__actions = actions
+
+    def load_q_table(self, file_name):
+        with open(file_name, 'r') as file:
+            self.__q_table = file.read(pickle.loads(file))
+
+    def save_q_table(self):
+        print('Saving QTable...')
+
+        with open('./data/qtable.json', 'wb') as file:
+            file.write(pickle.dumps(self.__q_table))
+
+    def get_q_table_len(self):
+        return len(self.__q_table)
 
     def get_q_table_values(self, state):
         """ Gets the q_table for a given state
@@ -52,7 +67,7 @@ class QTable(object):
 
     def __get_q_table_entry(self, state):
         # Convert state to temporary entry to use for searching
-        q_table_entry = QTableEntry(state)
+        q_table_entry = QTableEntry(state, actions=self.__actions)
         key = q_table_entry.get_state_str()
 
         # Check if entry exists, if not create

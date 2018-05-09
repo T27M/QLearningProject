@@ -1,16 +1,18 @@
 {
-    "debug": true,
-    "log_output": false,
+    "debug": false,
+    "log_output": true,
     "log_path": "./log",
     "QAgent": {
+        "load_q_table": false,
+        "q_table_file_path": "./data/qtable.json",
         "discount_factor": 0.95,
         "learning_rate": 0.8,
         "random_action": 0.1
     },
     "Environment": {
-        "episodes": 5,
-        "render": true,
-        "action_repeat": 4,
+        "episodes": 500,
+        "render": false,
+        "action_repeat": 2,
         "gym_environment": "MsPacman-v0"
     },
     "FeatureProcessor": {
