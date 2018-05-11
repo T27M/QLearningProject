@@ -24,7 +24,7 @@ for i in range(5000):
 
     while(True):
 
-        # env.render()
+        env.render()
 
         # Predict action
         action = q_agent.predict(s)
