@@ -12,7 +12,7 @@ import random
 class LfaQAgent():
     def __init__(self):
         # Feature weights
-        self.__w = 0.1 * np.ones((2, 4))
+        self.__w = 0.1 * np.ones((2, 4), dtype=np.float64)
         self.__rewards = []
 
         self.__wrk_dir = './data/lfa/' + time.strftime("%Y%m%d-%H%M%S")
@@ -26,21 +26,36 @@ class LfaQAgent():
         self.__rewards = []
 
         # Learning rate
-        self.alpha = 0.8
+        self.alpha = 0.4
+        self.__min_learning_rate = 0.01
 
         self.alpha_zero = 0.8
-        self.alpha_decay = 0.2
+        self.alpha_decay = 0.01
 
         # Discount factor
-        self.gamma = 0.95
+        self.gamma = 0.9
 
         # Random action
         self.epsilon = 0.1
 
         self.__actions = [0, 1]
 
+        self.__step_decay = 250
+        self.__decay_step_ctr = 0
+
     def paths(self):
         return self.__wrk_dir
+
+    def best_episode(self):
+        best = max(self.__rewards, key=lambda x: x['episode_reward'])
+        return best
+
+    def avg_score(self):
+        episodes = len(self.__rewards)
+        scores = [x['episode_reward'] for x in self.__rewards]
+        total = sum(scores)
+
+        return total / episodes
 
     def add_reward(self, episode, episode_reward):
         er_dict = {
@@ -97,17 +112,31 @@ class LfaQAgent():
         error = (reward + self.gamma * maxQ) - Qsa
 
         # Multiply by error
-        s = [self.alpha * error * x for x in s]
+        ms = [self.alpha * error * x for x in s]
 
         # Update weights
-        self.__w[a] = self.__w[a] + s
+        self.__w[a] = self.__w[a] + ms
+
+        # Round weights
+        self.__w[a] = [np.around(x, 3) for x in self.__w[a]]
 
         # print(self.__w)
 
     def decay_learning_rate(self, episode):
-        # 1/t decay
-        self.alpha = self.alpha_zero / \
-            (1 + self.alpha_decay * episode)
+        if self.alpha / 2 > self.__min_learning_rate:
+            pass
+
+        if self.__decay_step_ctr == self.__step_decay:
+            self.__decay_step_ctr = 0
+            self.alpha = self.alpha / 2
+            return True
+        else:
+            self.__decay_step_ctr = self.__decay_step_ctr + 1
+            return False
+
+            # # 1/t decay
+            # self.alpha = self.alpha_zero / \
+            #     (1 + self.alpha_decay * episode)
 
 
 q = LfaQAgent()
@@ -119,7 +148,7 @@ print(q.weights())
 env = gym.make('CartPole-v0')
 env.reset()
 
-for episode in range(5000):
+for episode in range(1000):
     print('\n')
     print('Episode: ' + str(episode))
     print("\tLearning Rate:" + str(q.alpha))
@@ -139,7 +168,7 @@ for episode in range(5000):
         s1, reward, done, info = env.step(action)
 
         # if done:
-        # reward = -100
+        # reward = -1000
 
         # Update QTable
         q.update_fa(s, action, s1, reward)
@@ -160,14 +189,19 @@ for episode in range(5000):
             print('\tSaving weights...')
             q.save_weights()
 
-            # if q.alpha > 0.001:
-            #     print('\tDecay learning rate')
-            #     q.decay_learning_rate(episode)
+            if q.decay_learning_rate(episode):
+                print('\tDecay learning rate..')
 
             print('\n ---')
             break
 
 print('\n Data saved to: ' + q.paths())
 
-print('\n')
+print('\n Weights:')
 print(q.weights())
+
+print('\n Best episode:')
+print(q.best_episode())
+
+print('\n Avg score/episode:')
+print(str(q.avg_score()))
