@@ -1,5 +1,0 @@
-Episode: 0 | Reward: 10.0
-Episode: 1 | Reward: 9.0
-Episode: 0 | Reward: 9.0
-Episode: 1 | Reward: 9.0
-Episode: 2 | Reward: 10.0
