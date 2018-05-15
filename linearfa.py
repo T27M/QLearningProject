@@ -167,6 +167,9 @@ class Env():
         self.__decay = decay
         self.__agent = agent
 
+        self.__starting_lives = 3
+        self.__current_lives = 3
+
         if train:
             print("\tTraining agent...")
         else:
@@ -205,11 +208,14 @@ class Env():
                     # Use policy
                     action = self.__agent.act(s)
 
-                print(action)
-
                 # Take action
-                s1, reward, done, _ = env.step(action)
+                s1, reward, done, info = env.step(action)
                 s1 = fp.extract_features(s1)
+
+                if info['ale.lives'] < self.__current_lives:
+                    self.__current_lives = self.__current_lives - 1
+                    print('Lost life')
+                    reward = -1000
 
                 # if done:
                 # reward = -1000
@@ -228,6 +234,8 @@ class Env():
                 episode_reward += reward
 
                 if done:
+                    self.__current_lives = self.__starting_lives
+
                     print("\tEpisode reward: " + str(episode_reward))
                     self.__agent.add_reward(episode, episode_reward)
 
@@ -246,7 +254,7 @@ class Env():
 render = False
 train = True
 decay = False
-episodes = 250
+episodes = 100
 
 q = LfaQAgent()
 # q.load_weights('./data/lfa/20180515-112554/')
