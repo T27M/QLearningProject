@@ -1,13 +1,58 @@
 from linearfa.lfaqagent import LfaQAgent
 from linearfa.env import Env
+import argparse
+import sys
 
-render = False
-train = True
-decay = False
-episodes = 20
+parser = argparse.ArgumentParser()
 
-q = LfaQAgent()
-# q.load_weights('./data/lfa/20180515-112554/')
+parser.add_argument('-e', '--episodes',
+                    help='# Number of episodes',
+                    type=int)
+
+parser.add_argument('-t', '--train',
+                    help='train the agent',
+                    action='store_true')
+
+parser.add_argument('-lr', '--learning_rate',
+                    help='learning rate of the agent e.g. 0.0001',
+                    type=float)
+
+parser.add_argument('-d', '--decay',
+                    help='decay the learning rate',
+                    action='store_true')
+
+parser.add_argument('-lw', '--load-weights',
+                    help='load saved weights for the agent',
+                    type=str)
+
+parser.add_argument('-r', '--render',
+                    help='render the environment',
+                    action='store_true')
+
+args = parser.parse_args()
+
+episodes = args.episodes
+train = args.train
+learning_rate = args.learning_rate
+
+decay = args.decay
+load_weights = args.load_weights
+render = args.render
+
+print("Episodes: " + str(episodes))
+print("Train: " + str(train))
+print("Learning Rate: " + str(learning_rate))
+
+print("Learning Rate Decay: " + str(decay))
+print("Loading weights: " + str(load_weights))
+print("Render Environment: " + str(render))
+
+input('Press any key to continue...')
+
+q = LfaQAgent(learning_rate)
+
+if load_weights is not None:
+    q.load_weights('./data/lfa/' + load_weights)
 
 en = Env(q, render, train, decay)
 en.run(episodes)

@@ -43,7 +43,7 @@ class Env(object):
 
             # Agent has control only when play is valid i.e it can move
             print('Awaiting control...')
-            for _ in range(100):
+            for _ in range(80):
                 if self.__render:
                     env.render()
                 s, reward, done, _ = env.step(0)

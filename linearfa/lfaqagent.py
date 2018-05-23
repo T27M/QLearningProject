@@ -8,7 +8,7 @@ import random
 
 
 class LfaQAgent(object):
-    def __init__(self):
+    def __init__(self, learning_rate):
         # Feature weights
         self.__w = 0.1 * np.ones((4, 163), dtype=np.float64)
         self.__rewards = []
@@ -26,7 +26,7 @@ class LfaQAgent(object):
         self.__rewards = []
 
         # Learning rate
-        self.alpha = 0.0001
+        self.alpha = learning_rate
         self.__min_learning_rate = 0.01
 
         self.alpha_zero = 0.8
