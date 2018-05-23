@@ -4,7 +4,7 @@ from linearfa.env import Env
 render = False
 train = True
 decay = False
-episodes = 3
+episodes = 20
 
 q = LfaQAgent()
 # q.load_weights('./data/lfa/20180515-112554/')

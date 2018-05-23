@@ -10,7 +10,7 @@ import random
 class LfaQAgent(object):
     def __init__(self):
         # Feature weights
-        self.__w = 0.1 * np.ones((4, 163), dtype=np.float128)
+        self.__w = 0.1 * np.ones((4, 163))
         self.__rewards = []
 
         self.__wrk_dir = './data/lfa/' + time.strftime("%Y%m%d-%H%M%S")
@@ -26,7 +26,7 @@ class LfaQAgent(object):
         self.__rewards = []
 
         # Learning rate
-        self.alpha = 0.2
+        self.alpha = 0.001
         self.__min_learning_rate = 0.01
 
         self.alpha_zero = 0.8
@@ -93,8 +93,12 @@ class LfaQAgent(object):
         return self.__w
 
     def save_weights(self):
-        with open(self.__weights_path, 'wb') as file:
-            pickle.dump(self.__w, file)
+
+        if np.isnan(self.__w).any():
+            print('Skipping save - Nan detected')
+        else:
+            with open(self.__weights_path, 'wb') as file:
+                pickle.dump(self.__w, file)
 
     def load_weights(self, path):
         try:
@@ -105,7 +109,9 @@ class LfaQAgent(object):
 
     def Q(self, s, a):
         # Q value for state s
-        return np.asscalar(np.dot(s, self.__w[a - 1]))
+        q_dot = np.dot(s, self.__w[a - 1])
+
+        return np.asscalar(q_dot)
 
     def Qs(self, s):
         return list(map(lambda a: self.Q(s, a), self.__actions))
@@ -123,27 +129,36 @@ class LfaQAgent(object):
         return np.argmax(self.Qs(s))
 
     def update_fa(self, s, a, s1, r):
+        action_index = a - 1
         Qsa = self.Q(s, a)
         maxQ = self.maxQs(s1)
 
-        # Weight error
-        gamma_maxq = np.prod([self.gamma, maxQ], dtype=np.float128)
-        error = (r + gamma_maxq) - Qsa
+        # Q-Learning
+        q_td = r + self.gamma * maxQ
 
-        ms = np.zeros(163, dtype=np.float128)
+        difference = (q_td - Qsa)
 
-        # Multiply by error
-        for idx, cacl_s in enumerate(ms):
-            print(cacl_s)
-            d64arr = np.array([self.alpha, error, s[idx]], dtype=np.float128)
-            smult = np.prod(d64arr)
-            ms[idx] = smult
+        # # Multiply by error
+        # for idx, cacl_s in enumerate(ms):
+        #     d64arr = np.array([self.alpha, error, s[idx]], dtype=np.float64)
+        #     smult = np.prod(d64arr)
+        #     ms[idx] = smult
+
+        weight_update = [self.alpha * difference * fi for fi in s]
 
         # Update weights
-        self.__w[a - 1] = self.__w[a - 1] + ms
+        for weight_i in range(len(self.__w[action_index])):
+            cur_weight = self.__w[action_index][weight_i]
+            new_weight = cur_weight + weight_update[weight_i]
+
+            self.__w[action_index][weight_i] = new_weight
+
+        # print('Weights Updated for a=' + str(action_index))
+        # print(self.__w[action_index])
+        # self.__w[a - 1] = self.__w[a - 1] + weight_update
 
         # Round weights
-        self.__w[a - 1] = [np.around(x, 3) for x in self.__w[a - 1]]
+        # self.__w[a - 1] = [np.around(x, 3) for x in self.__w[a - 1]]
 
         # print(self.__w)
 

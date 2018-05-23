@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: LFA",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/tom/Repo/Python/QLearningProject/linearfa.py"
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",

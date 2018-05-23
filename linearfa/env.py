@@ -23,6 +23,7 @@ class Env(object):
         print(self.__agent.weights())
 
     def run(self, episodes):
+
         # env = gym.make('CartPole-v0')
         env = gym.make('MsPacman-v0')
         env.reset()
@@ -37,12 +38,16 @@ class Env(object):
 
             episode_reward = 0
             action = 1
-            s = env.reset()
+
+            # Agent has control only when play is valid i.e it can move
+            print('Awaiting control...')
+            for _ in range(100):
+                if self.__render:
+                    env.render()
+                s, reward, done, _ = env.step(0)
+            print('Agent has control!')
 
             s = fp.extract_features(s)
-
-            print(s)
-            sys.exit()
 
             while(True):
                 if self.__render:
