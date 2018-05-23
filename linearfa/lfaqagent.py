@@ -104,6 +104,7 @@ class LfaQAgent(object):
         try:
             with open(path + 'lfa.weights.pickle', 'rb') as file:
                 self.__w = pickle.load(file)
+                print('Loaded weights!')
         except FileNotFoundError:
             print("Weight file not found")
 
@@ -126,7 +127,7 @@ class LfaQAgent(object):
             return self.__actions[np.argmax(self.Qs(s))]
 
     def act(self, s):
-        return np.argmax(self.Qs(s))
+        return self.__actions[np.argmax(self.Qs(s))]
 
     def update_fa(self, s, a, s1, r):
         action_index = a - 1

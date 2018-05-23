@@ -44,7 +44,10 @@ print("Train: " + str(train))
 print("Learning Rate: " + str(learning_rate))
 
 print("Learning Rate Decay: " + str(decay))
-print("Loading weights: " + str(load_weights))
+
+path = './data/lfa/' + load_weights + '/'
+print("Loading weights: " + path)
+
 print("Render Environment: " + str(render))
 
 input('Press any key to continue...')
@@ -52,7 +55,8 @@ input('Press any key to continue...')
 q = LfaQAgent(learning_rate)
 
 if load_weights is not None:
-    q.load_weights('./data/lfa/' + load_weights)
+
+    q.load_weights(path)
 
 en = Env(q, render, train, decay)
 en.run(episodes)
