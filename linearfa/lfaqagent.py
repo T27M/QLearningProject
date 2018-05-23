@@ -10,7 +10,7 @@ import random
 class LfaQAgent(object):
     def __init__(self):
         # Feature weights
-        self.__w = 0.1 * np.ones((4, 163))
+        self.__w = 0.1 * np.ones((4, 163), dtype=np.float64)
         self.__rewards = []
 
         self.__wrk_dir = './data/lfa/' + time.strftime("%Y%m%d-%H%M%S")
@@ -26,7 +26,7 @@ class LfaQAgent(object):
         self.__rewards = []
 
         # Learning rate
-        self.alpha = 0.001
+        self.alpha = 0.01
         self.__min_learning_rate = 0.01
 
         self.alpha_zero = 0.8
@@ -134,9 +134,9 @@ class LfaQAgent(object):
         maxQ = self.maxQs(s1)
 
         # Q-Learning
-        q_td = r + self.gamma * maxQ
+        q_td = r + np.multiply(self.gamma, maxQ, dtype=np.float64)
 
-        difference = (q_td - Qsa)
+        difference = np.subtract(q_td, Qsa, dtype=np.float64)
 
         # # Multiply by error
         # for idx, cacl_s in enumerate(ms):
@@ -144,7 +144,10 @@ class LfaQAgent(object):
         #     smult = np.prod(d64arr)
         #     ms[idx] = smult
 
-        weight_update = [self.alpha * difference * fi for fi in s]
+        weight_update = [
+            np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
+
+        weight_update = [(self.alpha * difference) * fi for fi in s]
 
         # Update weights
         for weight_i in range(len(self.__w[action_index])):
@@ -153,14 +156,8 @@ class LfaQAgent(object):
 
             self.__w[action_index][weight_i] = new_weight
 
-        # print('Weights Updated for a=' + str(action_index))
-        # print(self.__w[action_index])
-        # self.__w[a - 1] = self.__w[a - 1] + weight_update
-
         # Round weights
-        # self.__w[a - 1] = [np.around(x, 3) for x in self.__w[a - 1]]
-
-        # print(self.__w)
+        self.__w[a - 1] = [np.around(x, 3) for x in self.__w[a - 1]]
 
     def decay_learning_rate(self, episode):
         if self.alpha - self.alpha_decay >= self.__min_learning_rate:

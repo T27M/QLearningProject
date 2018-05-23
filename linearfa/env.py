@@ -39,6 +39,8 @@ class Env(object):
             episode_reward = 0
             action = 1
 
+            s = env.reset()
+
             # Agent has control only when play is valid i.e it can move
             print('Awaiting control...')
             for _ in range(100):
@@ -87,6 +89,8 @@ class Env(object):
 
                     print("\tEpisode reward: " + str(episode_reward))
                     self.__agent.add_reward(episode, episode_reward)
+
+                    print(self.__agent.weights())
 
                     if self.__train:
                         print('\tSaving weights...')
