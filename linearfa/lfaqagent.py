@@ -26,7 +26,7 @@ class LfaQAgent(object):
         self.__rewards = []
 
         # Learning rate
-        self.alpha = 0.01
+        self.alpha = 0.0001
         self.__min_learning_rate = 0.01
 
         self.alpha_zero = 0.8
