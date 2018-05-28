@@ -37,7 +37,7 @@ class LfaQAgent(object):
         self.alpha_decay = 0.05
 
         # Discount factor
-        self.gamma = 0.9
+        self.gamma = 0.5
 
         # Random action
         self.epsilon = 0.1
@@ -117,7 +117,7 @@ class LfaQAgent(object):
 
     def get_Q(self, s, a):
         # Q value for state s
-        return np.dot(s, self.__w[a - 1])
+        return np.dot(s, self.__w[a])
 
     def get_all_Q(self, s):
         return list(map(lambda a: self.get_Q(s, a), self.__actions))
@@ -135,7 +135,8 @@ class LfaQAgent(object):
         return self.__actions[np.argmax(self.get_all_Q(s))]
 
     def update_fa(self, s, a, s1, r):
-        action_index = a - 1
+        action_index = a
+        print("AI:" + str(action_index))
         Qsa = self.get_Q(s, a)
         maxQ = self.get_max_Q(s1)
 
@@ -157,7 +158,7 @@ class LfaQAgent(object):
             self.__w[action_index][weight_i] = new_weight
 
         # Round weights
-        self.__w[a - 1] = [np.around(x, 3) for x in self.__w[a - 1]]
+        # self.__w[a - 1] = [np.around(x, 3) for x in self.__w[a - 1]]
 
     def decay_learning_rate(self, episode):
         if self.alpha - self.alpha_decay >= self.__min_learning_rate:

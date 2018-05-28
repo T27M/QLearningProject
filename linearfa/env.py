@@ -38,7 +38,7 @@ class Env(object):
             print("\tLearning Rate:" + str(self.__agent.alpha))
 
             episode_reward = 0
-            action = 1
+            action = -1
 
             s = env.reset()
 
@@ -59,11 +59,11 @@ class Env(object):
                 if self.__train:
                     # Predict action
                     action = self.__agent.predict(s)
-                    print('Training action: ' + str(action))
+                    # print('Training action: ' + str(action))
                 else:
                     # Use policy
                     action = self.__agent.act(s)
-                    print('Policy action: ' + str(action))
+                    # print('Policy action: ' + str(action))
 
                 # Take action
                 s1, reward, done, info = env.step(action)
