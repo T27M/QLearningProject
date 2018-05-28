@@ -5,12 +5,13 @@ from core.featureprocessor import FeatureProcessor
 
 
 class Env(object):
-    def __init__(self, agent, render, train, decay):
+    def __init__(self, agent, render, train, decay, random):
         self.__render = render
         self.__train = train
         self.__decay = decay
         self.__agent = agent
         self.__player_control = False
+        self.__random_agent = random
 
         self.__starting_lives = 3
         self.__current_lives = 3
@@ -25,8 +26,8 @@ class Env(object):
 
     def run(self, episodes):
 
-        env = gym.make('CartPole-v0')
-        # env = gym.make('MsPacman-v0')
+        # env = gym.make('CartPole-v0')
+        env = gym.make('MsPacman-v0')
         env.reset()
 
         config = Config()
@@ -36,6 +37,7 @@ class Env(object):
             print('\n')
             print('Episode: ' + str(episode))
             print("\tLearning Rate:" + str(self.__agent.alpha))
+            print("\tDiscount Factor:" + str(self.__agent.gamma))
 
             episode_reward = 0
             action = -1
@@ -50,7 +52,8 @@ class Env(object):
             #     s, reward, done, _ = env.step(0)
             # print('Agent has control!')
 
-            # s = fp.extract_features(s)
+            if not self.__random_agent:
+                s = fp.extract_features(s)
 
             while(True):
                 if self.__render:
@@ -61,21 +64,28 @@ class Env(object):
                     action = self.__agent.predict(s)
                     # print('Training action: ' + str(action))
                 else:
-                    # Use policy
-                    action = self.__agent.act(s)
-                    # print('Policy action: ' + str(action))
+
+                    if self.__random_agent:
+                        # Random agent
+                        action = env.action_space.sample()
+                    else:
+                        # Use policy
+                        action = self.__agent.act(s)
+                        # print('Policy action: ' + str(action))
 
                 # Take action
                 s1, reward, done, info = env.step(action)
-                # s1 = fp.extract_features(s1)
+
+                if not self.__random_agent:
+                    s1 = fp.extract_features(s1)
 
                 # Pass state along
                 s = s1
 
-                # if info['ale.lives'] < self.__current_lives:
-                #     self.__current_lives = self.__current_lives - 1
-                #     print('Lost life')
-                #     reward = -100
+                if info['ale.lives'] < self.__current_lives:
+                    self.__current_lives = self.__current_lives - 1
+                    print('Lost life')
+                    reward = -100
 
                 if self.__train and not self.__player_control:
                     # Update QTable
@@ -96,7 +106,7 @@ class Env(object):
 
                     if self.__train and not self.__player_control:
                         print('\tSaving weights...')
-                        self.__agent.save_weights()
+                        self.__agent.save_weights(episode)
 
                         if self.__decay:
                             if self.__agent.decay_learning_rate(episode):

@@ -18,8 +18,16 @@ parser.add_argument('-t', '--train',
                     help='train the agent',
                     action='store_true')
 
+parser.add_argument('--random',
+                    help='train the agent',
+                    action='store_true')
+
 parser.add_argument('-lr', '--learning_rate',
                     help='learning rate of the agent e.g. 0.0001',
+                    type=float)
+
+parser.add_argument('-df', '--discount_factor',
+                    help='discount_factor of the agent e.g. 0.85',
                     type=float)
 
 parser.add_argument('-d', '--decay',
@@ -42,16 +50,21 @@ args = parser.parse_args()
 
 episodes = args.episodes
 train = args.train
+random = args.random
 learning_rate = args.learning_rate
+discount_factor = args.discount_factor
 
 decay = args.decay
 load_weights = args.load_weights
 load_saved_weights = args.load_saved_weights
 render = args.render
 
+print("Random: " + str(random))
 print("Episodes: " + str(episodes))
 print("Train: " + str(train))
 print("Learning Rate: " + str(learning_rate))
+print("Discount Factor: " + str(discount_factor))
+
 
 print("Learning Rate Decay: " + str(decay))
 
@@ -67,12 +80,12 @@ print("Render Environment: " + str(render))
 
 input('Press any key to continue...')
 
-q = LfaQAgent(learning_rate)
+q = LfaQAgent(learning_rate=learning_rate, discount_factor=discount_factor)
 
 if load_weights is not None or load_saved_weights is not None:
     q.load_weights(path)
 
-en = Env(q, render, train, decay)
+en = Env(q, render, train, decay, random)
 en.run(episodes)
 
 q.stats()

@@ -8,12 +8,12 @@ import random
 
 
 class LfaQAgent(object):
-    def __init__(self, learning_rate):
+    def __init__(self, learning_rate, discount_factor):
         # Feature weights
-        # self.__w = 0.1 * np.ones((4, 163), dtype=np.float64)
+        self.__w = 0.1 * np.ones((5, 163), dtype=np.float64)
 
         # CartPole
-        self.__w = 0.1 * np.ones((2, 4), dtype=np.float64)
+        # self.__w = 0.1 * np.ones((2, 4), dtype=np.float64)
 
         self.__rewards = []
 
@@ -23,7 +23,7 @@ class LfaQAgent(object):
             os.makedirs(self.__wrk_dir)
 
         self.__reward_path = self.__wrk_dir + '/lfa.reward.json'
-        self.__weights_path = self.__wrk_dir + '/lfa.weights.pickle'
+        self.__weights_path = self.__wrk_dir + '/{}/lfa.weights.pickle'
 
         # call(['gnome-terminal', '-x', 'tail -f '])
 
@@ -37,16 +37,16 @@ class LfaQAgent(object):
         self.alpha_decay = 0.05
 
         # Discount factor
-        self.gamma = 0.5
+        self.gamma = discount_factor
 
         # Random action
         self.epsilon = 0.1
 
         # Pacman
-        # self.__actions = [1, 2, 3, 4]
+        self.__actions = [1, 2, 3, 4]
 
         # CartPole
-        self.__actions = [0, 1]
+        # self.__actions = [0, 1]
 
         self.__step_decay = 100
         self.__decay_step_ctr = 0
@@ -100,11 +100,16 @@ class LfaQAgent(object):
     def weights(self):
         return self.__w
 
-    def save_weights(self):
+    def save_weights(self, episode):
         if np.isnan(self.__w).any():
             print('Skipping save - Nan detected')
         else:
-            with open(self.__weights_path, 'wb') as file:
+            if not os.path.exists(self.__wrk_dir + '/' + str(episode)):
+                os.makedirs(self.__wrk_dir + '/' + str(episode))
+
+            weight_episode_path = self.__weights_path.format(episode)
+
+            with open(weight_episode_path, 'wb') as file:
                 pickle.dump(self.__w, file)
 
     def load_weights(self, path):
@@ -136,7 +141,7 @@ class LfaQAgent(object):
 
     def update_fa(self, s, a, s1, r):
         action_index = a
-        print("AI:" + str(action_index))
+        # print("AI:" + str(action_index))
         Qsa = self.get_Q(s, a)
         maxQ = self.get_max_Q(s1)
 
@@ -147,8 +152,6 @@ class LfaQAgent(object):
 
         weight_update = [
             np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
-
-        weight_update = [(self.alpha * difference) * fi for fi in s]
 
         # Update weights
         for weight_i in range(len(self.__w[action_index])):
