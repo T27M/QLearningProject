@@ -8,7 +8,14 @@
             "name": "Python: LFA",
             "type": "python",
             "request": "launch",
-            "program": "/home/tom/Repo/Python/QLearningProject/linearfa.py"
+            "program": "/home/tom/Repo/Python/QLearningProject/linearfa.py",
+            "args": [
+                "-r",
+                "-lsw",
+                "1800",
+                "-e",
+                "10"
+            ]
         },
         {
             "name": "Python: Current File",

@@ -10,7 +10,11 @@ import random
 class LfaQAgent(object):
     def __init__(self, learning_rate):
         # Feature weights
-        self.__w = 0.1 * np.ones((4, 163), dtype=np.float64)
+        # self.__w = 0.1 * np.ones((4, 163), dtype=np.float64)
+
+        # CartPole
+        self.__w = 0.1 * np.ones((2, 4), dtype=np.float64)
+
         self.__rewards = []
 
         self.__wrk_dir = './data/lfa/' + time.strftime("%Y%m%d-%H%M%S")
@@ -38,7 +42,11 @@ class LfaQAgent(object):
         # Random action
         self.epsilon = 0.1
 
-        self.__actions = [1, 2, 3, 4]
+        # Pacman
+        # self.__actions = [1, 2, 3, 4]
+
+        # CartPole
+        self.__actions = [0, 1]
 
         self.__step_decay = 100
         self.__decay_step_ctr = 0
@@ -93,7 +101,6 @@ class LfaQAgent(object):
         return self.__w
 
     def save_weights(self):
-
         if np.isnan(self.__w).any():
             print('Skipping save - Nan detected')
         else:
@@ -108,42 +115,34 @@ class LfaQAgent(object):
         except FileNotFoundError:
             print("Weight file not found")
 
-    def Q(self, s, a):
+    def get_Q(self, s, a):
         # Q value for state s
-        q_dot = np.dot(s, self.__w[a - 1])
+        return np.dot(s, self.__w[a - 1])
 
-        return np.asscalar(q_dot)
+    def get_all_Q(self, s):
+        return list(map(lambda a: self.get_Q(s, a), self.__actions))
 
-    def Qs(self, s):
-        return list(map(lambda a: self.Q(s, a), self.__actions))
-
-    def maxQs(self, s):
-        return np.max(self.Qs(s))
+    def get_max_Q(self, s):
+        return np.max(self.get_all_Q(s))
 
     def predict(self, s):
         if self.epsilon > random.random():
             return random.choice(self.__actions)
         else:
-            return self.__actions[np.argmax(self.Qs(s))]
+            return self.__actions[np.argmax(self.get_all_Q(s))]
 
     def act(self, s):
-        return self.__actions[np.argmax(self.Qs(s))]
+        return self.__actions[np.argmax(self.get_all_Q(s))]
 
     def update_fa(self, s, a, s1, r):
         action_index = a - 1
-        Qsa = self.Q(s, a)
-        maxQ = self.maxQs(s1)
+        Qsa = self.get_Q(s, a)
+        maxQ = self.get_max_Q(s1)
 
         # Q-Learning
         q_td = r + np.multiply(self.gamma, maxQ, dtype=np.float64)
 
         difference = np.subtract(q_td, Qsa, dtype=np.float64)
-
-        # # Multiply by error
-        # for idx, cacl_s in enumerate(ms):
-        #     d64arr = np.array([self.alpha, error, s[idx]], dtype=np.float64)
-        #     smult = np.prod(d64arr)
-        #     ms[idx] = smult
 
         weight_update = [
             np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]

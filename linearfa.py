@@ -3,6 +3,11 @@ from linearfa.env import Env
 import argparse
 import sys
 
+human_agent_action = 0
+human_wants_restart = False
+human_sets_pause = False
+
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-e', '--episodes',
@@ -22,6 +27,10 @@ parser.add_argument('-d', '--decay',
                     action='store_true')
 
 parser.add_argument('-lw', '--load-weights',
+                    help='load saved weights (from data) for the agent',
+                    type=str)
+
+parser.add_argument('-lsw', '--load-saved-weights',
                     help='load saved weights for the agent',
                     type=str)
 
@@ -37,6 +46,7 @@ learning_rate = args.learning_rate
 
 decay = args.decay
 load_weights = args.load_weights
+load_saved_weights = args.load_saved_weights
 render = args.render
 
 print("Episodes: " + str(episodes))
@@ -49,13 +59,17 @@ if load_weights is not None:
     path = './data/lfa/' + load_weights + '/'
     print("Loading weights: " + path)
 
+if load_saved_weights is not None:
+    path = './saved-weights/' + load_saved_weights + '/'
+    print('Loading saved weights: ' + path)
+
 print("Render Environment: " + str(render))
 
 input('Press any key to continue...')
 
 q = LfaQAgent(learning_rate)
 
-if load_weights is not None:
+if load_weights is not None or load_saved_weights is not None:
     q.load_weights(path)
 
 en = Env(q, render, train, decay)
