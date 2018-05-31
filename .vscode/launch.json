@@ -10,10 +10,11 @@
             "request": "launch",
             "program": "/home/tom/Repo/Python/QLearningProject/linearfa.py",
             "args": [
-                "-lsw",
-                "cart-pole",
                 "-e",
-                "10"
+                "10",
+                "-t",
+                "-lr",
+                "0.2",
             ]
         },
         {

@@ -10,6 +10,10 @@ human_sets_pause = False
 
 parser = argparse.ArgumentParser()
 
+parser.add_argument('-env', '--environment',
+                    help='# Gym OpenAI Environment',
+                    type=str)
+
 parser.add_argument('-e', '--episodes',
                     help='# Number of episodes',
                     type=int)
@@ -48,6 +52,7 @@ parser.add_argument('-r', '--render',
 
 args = parser.parse_args()
 
+environment = args.environment
 episodes = args.episodes
 train = args.train
 random = args.random
@@ -59,6 +64,7 @@ load_weights = args.load_weights
 load_saved_weights = args.load_saved_weights
 render = args.render
 
+print('Environment: ' + environment)
 print("Random: " + str(random))
 print("Episodes: " + str(episodes))
 print("Train: " + str(train))
@@ -80,12 +86,14 @@ print("Render Environment: " + str(render))
 
 input('Press any key to continue...')
 
-q = LfaQAgent(learning_rate=learning_rate, discount_factor=discount_factor)
+q = LfaQAgent(learning_rate=learning_rate,
+              discount_factor=discount_factor,
+              environment=environment)
 
 if load_weights is not None or load_saved_weights is not None:
     q.load_weights(path)
 
-en = Env(q, render, train, decay, random)
+en = Env(q, render, train, decay, random, environment)
 en.run(episodes)
 
 q.stats()
@@ -99,6 +107,9 @@ while True:
     if key.lower() == "r":
         train = False
 
+    if key.lower() == "t":
+        train = True
+
     if key.lower() == 'rr':
         train = False
         render = True
@@ -107,6 +118,6 @@ while True:
         break
 
     q.clear_score()
-    en = Env(q, render, train, decay)
+    en = Env(q, render, train, decay, False)
     en.run(episodes)
     q.stats()

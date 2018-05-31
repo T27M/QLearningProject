@@ -1,17 +1,22 @@
 import sys
 import gym
+import numpy as np
 from core.config import Config
 from core.featureprocessor import FeatureProcessor
 
 
 class Env(object):
-    def __init__(self, agent, render, train, decay, random):
+    def __init__(self, agent, render, train, decay, random, environment):
+        self.__env_pacman = 'MsPacman-v0'
+        self.__env_cartpole = 'CartPole-v0'
+
         self.__render = render
         self.__train = train
         self.__decay = decay
         self.__agent = agent
         self.__player_control = False
         self.__random_agent = random
+        self.__environment = environment
 
         self.__starting_lives = 3
         self.__current_lives = 3
@@ -25,10 +30,10 @@ class Env(object):
         print(self.__agent.weights())
 
     def run(self, episodes):
-
-        # env = gym.make('CartPole-v0')
-        env = gym.make('MsPacman-v0')
+        env = gym.make(self.__environment)
         env.reset()
+
+        env_is_pacman = self.__environment == self.__env_pacman
 
         config = Config()
         fp = FeatureProcessor(config)
@@ -52,8 +57,10 @@ class Env(object):
             #     s, reward, done, _ = env.step(0)
             # print('Agent has control!')
 
-            if not self.__random_agent:
+            if not self.__random_agent and env_is_pacman:
                 s = fp.extract_features(s)
+
+            s = np.around(s, decimals=1)
 
             while(True):
                 if self.__render:
@@ -75,17 +82,19 @@ class Env(object):
 
                 # Take action
                 s1, reward, done, info = env.step(action)
+                s1 = np.around(s1, decimals=1)
 
-                if not self.__random_agent:
+                if not self.__random_agent and env_is_pacman:
                     s1 = fp.extract_features(s1)
 
                 # Pass state along
                 s = s1
 
-                if info['ale.lives'] < self.__current_lives:
-                    self.__current_lives = self.__current_lives - 1
-                    print('Lost life')
-                    reward = -100
+                if not self.__random_agent and env_is_pacman:
+                    if info['ale.lives'] < self.__current_lives:
+                        self.__current_lives = self.__current_lives - 1
+                        print('Lost life')
+                        reward = -100
 
                 if self.__train and not self.__player_control:
                     # Update QTable

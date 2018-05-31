@@ -14,17 +14,17 @@ rewards = []
 
 q_agent.load_q_table()
 
-for i in range(5000):
+for i in range(250):
 
     print('Episode: ' + str(i))
 
     episode_reward = 0
     action = 0
-    s = np.around(env.reset(), decimals=2)
+    s = np.around(env.reset(), decimals=1)
 
     while(True):
 
-        env.render()
+        # env.render()
 
         # Predict action
         action = q_agent.predict(s)

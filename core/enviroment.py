@@ -66,14 +66,13 @@ class Environment(ConfigBase):
                 # Let agent predict action
                 action = self.__agent.predict(state)
 
-                # Perform action with action repeat
-                for _ in range(self.__action_repeat_count):
-                    ob, reward, done, info = self.__env.step(
-                        self.__actions[action])
+                # # Perform action with action repeat
+                # for _ in range(self.__action_repeat_count):
+                ob, reward, done, info = self.__env.step(action)
 
-                    # Render enviroment
-                    if self.__render:
-                        self.__env.render()
+                # Render enviroment
+                if self.__render:
+                    self.__env.render()
 
                 # Extract feature vector from observation
                 new_state = self.__feature_processor.extract_features(ob)
