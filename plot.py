@@ -4,7 +4,7 @@ from scipy.interpolate import spline
 import numpy as np
 import sys
 
-path = './Cart-Pole-Solved/lfa.reward.json'
+path = './data/lfa/cart-pole-opt/lfa.reward.json'
 
 with open(path, 'r') as file:
     data = json.load(file)

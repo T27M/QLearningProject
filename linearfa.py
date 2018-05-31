@@ -52,6 +52,12 @@ parser.add_argument('-r', '--render',
 
 args = parser.parse_args()
 
+
+if args.environment == 'pm':
+    args.environment = 'MsPacman-v0'
+else:
+    args.environment = 'CartPole-v0'
+
 environment = args.environment
 episodes = args.episodes
 train = args.train
@@ -93,7 +99,7 @@ q = LfaQAgent(learning_rate=learning_rate,
 if load_weights is not None or load_saved_weights is not None:
     q.load_weights(path)
 
-en = Env(q, render, train, decay, random, environment)
+en = Env(q, render, train, decay, random, environment=environment)
 en.run(episodes)
 
 q.stats()
@@ -106,9 +112,11 @@ while True:
 
     if key.lower() == "r":
         train = False
+        render = False
 
     if key.lower() == "t":
         train = True
+        render = False
 
     if key.lower() == 'rr':
         train = False
@@ -118,6 +126,6 @@ while True:
         break
 
     q.clear_score()
-    en = Env(q, render, train, decay, False)
+    en = Env(q, render, train, decay, False, environment=environment)
     en.run(episodes)
     q.stats()

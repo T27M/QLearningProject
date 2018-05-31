@@ -5,6 +5,7 @@ import numpy as np
 import json
 import pickle
 import random
+from pathlib import Path
 
 
 class LfaQAgent(object):
@@ -24,13 +25,7 @@ class LfaQAgent(object):
 
         self.__rewards = []
 
-        self.__wrk_dir = './data/lfa/' + time.strftime("%Y%m%d-%H%M%S")
-
-        if not os.path.exists(self.__wrk_dir):
-            os.makedirs(self.__wrk_dir)
-
-        self.__reward_path = self.__wrk_dir + '/lfa.reward.json'
-        self.__weights_path = self.__wrk_dir + '/{}/lfa.weights.pickle'
+        self.__gen_dir()
 
         # call(['gnome-terminal', '-x', 'tail -f '])
 
@@ -38,10 +33,10 @@ class LfaQAgent(object):
 
         # Learning rate
         self.alpha = learning_rate
-        self.__min_learning_rate = 0.01
+        self.__min_learning_rate = 0.1
 
         self.alpha_zero = 0.8
-        self.alpha_decay = 0.05
+        self.alpha_decay = 0.1
 
         # Discount factor
         self.gamma = discount_factor
@@ -56,8 +51,17 @@ class LfaQAgent(object):
             # CartPole
             self.__actions = [0, 1]
 
-        self.__step_decay = 100
+        self.__step_decay = 1
         self.__decay_step_ctr = 0
+
+    def __gen_dir(self):
+        self.__wrk_dir = './data/lfa/' + time.strftime("%Y%m%d-%H%M%S")
+
+        if not os.path.exists(self.__wrk_dir):
+            os.makedirs(self.__wrk_dir)
+
+        self.__reward_path = self.__wrk_dir + '/lfa.reward.json'
+        self.__weights_path = self.__wrk_dir + '/{}/lfa.weights.pickle'
 
     def stats(self):
         print('\n Data saved to: ' + self.paths())
@@ -86,6 +90,7 @@ class LfaQAgent(object):
         return total / episodes
 
     def clear_score(self):
+        self.__gen_dir()
         self.__rewards = []
 
     def add_reward(self, episode, episode_reward):
@@ -140,6 +145,7 @@ class LfaQAgent(object):
 
     def predict(self, s):
         if self.epsilon > random.random():
+            print('random')
             return random.choice(self.__actions)
         else:
             return self.__actions[np.argmax(self.get_all_Q(s))]
