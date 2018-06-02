@@ -11,10 +11,11 @@
             "program": "/home/tom/Repo/Python/QLearningProject/linearfa.py",
             "args": [
                 "-e",
-                "10",
-                "-t",
-                "-lr",
-                "0.2",
+                "5",
+                "-lsw",
+                "cart-pole",
+                "-env",
+                "crtp"
             ]
         },
         {

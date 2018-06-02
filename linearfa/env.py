@@ -60,7 +60,7 @@ class Env(object):
             if not self.__random_agent and env_is_pacman:
                 s = fp.extract_features(s)
 
-            s = np.around(s, decimals=1)
+            s = np.around(s, decimals=3)
 
             while(True):
                 if self.__render:
@@ -82,13 +82,10 @@ class Env(object):
 
                 # Take action
                 s1, reward, done, info = env.step(action)
-                s1 = np.around(s1, decimals=1)
+                s1 = np.around(s1, decimals=3)
 
                 if not self.__random_agent and env_is_pacman:
                     s1 = fp.extract_features(s1)
-
-                # Pass state along
-                s = s1
 
                 if not self.__random_agent and env_is_pacman:
                     if info['ale.lives'] < self.__current_lives:
@@ -99,6 +96,9 @@ class Env(object):
                 if self.__train and not self.__player_control:
                     # Update QTable
                     self.__agent.update_fa(s, action, s1, reward)
+
+                # Pass state along
+                s = s1
 
                 if not self.__player_control:
                     # Total episode reward

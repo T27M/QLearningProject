@@ -33,7 +33,7 @@ class LfaQAgent(object):
 
         # Learning rate
         self.alpha = learning_rate
-        self.__min_learning_rate = 0.1
+        self.__min_learning_rate = 0.0001
 
         self.alpha_zero = 0.8
         self.alpha_decay = 0.1
@@ -51,7 +51,7 @@ class LfaQAgent(object):
             # CartPole
             self.__actions = [0, 1]
 
-        self.__step_decay = 1
+        self.__step_decay = 50
         self.__decay_step_ctr = 0
 
     def __gen_dir(self):
@@ -130,6 +130,27 @@ class LfaQAgent(object):
             with open(path + 'lfa.weights.pickle', 'rb') as file:
                 self.__w = pickle.load(file)
                 print('Loaded weights!')
+                print(self.__w)
+
+                print('Adding noise...')
+
+                noise = np.random.normal(0, 5, (2, 4))
+
+                print('Noise:')
+                print(noise)
+
+                self.__w = self.__w + noise
+
+                # Round weights
+                self.__w[0] = [np.around(x, 2) for x in self.__w[0]]
+                self.__w[1] = [np.around(x, 2) for x in self.__w[1]]
+
+                print('Noisey Weights:')
+
+                print(self.__w)
+
+                input('')
+
         except FileNotFoundError:
             print("Weight file not found")
 
@@ -145,7 +166,6 @@ class LfaQAgent(object):
 
     def predict(self, s):
         if self.epsilon > random.random():
-            print('random')
             return random.choice(self.__actions)
         else:
             return self.__actions[np.argmax(self.get_all_Q(s))]
@@ -153,59 +173,95 @@ class LfaQAgent(object):
     def act(self, s):
         return self.__actions[np.argmax(self.get_all_Q(s))]
 
-    # def update_fa(self, s, a, s1, r):
-    #     action_index = a
-    #     # print("AI:" + str(action_index))
-    #     Qsa = self.get_Q(s, a)
-    #     maxQ = self.get_max_Q(s1)
-
-    #     # Q-Learning
-    #     q_td = r + np.multiply(self.gamma, maxQ, dtype=np.float64)
-
-    #     difference = np.subtract(q_td, Qsa, dtype=np.float64)
-
-    #     weight_update = [
-    #         np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
-
-    #     # Update weights
-    #     for weight_i in range(len(self.__w[action_index])):
-    #         cur_weight = self.__w[action_index][weight_i]
-    #         new_weight = cur_weight + weight_update[weight_i]
-
-    #         self.__w[action_index][weight_i] = new_weight
-
-    #     # Round weights
-    #     self.__w[action_index] = [np.around(x, 3)
-    #                               for x in self.__w[action_index]]
-
     def update_fa(self, s, a, s1, r):
+
+        if(np.array_equal(s, s1)):
+            print("ERROR: s == s1")
+            sys.exit()
+
+        action_index = a
+        # print("AI:" + str(action_index))
         Qsa = self.get_Q(s, a)
         maxQ = self.get_max_Q(s1)
 
-        # Weight error
-        error = self.gamma * (r + maxQ - Qsa)
+        # Q-Learning
+        q_td = r + np.multiply(self.gamma, maxQ, dtype=np.float64)
 
-        # Multiply by error
-        ms = [self.alpha * error * x for x in s]
+        difference = np.subtract(q_td, Qsa, dtype=np.float64)
+
+        weight_update = [
+            np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
 
         # Update weights
-        self.__w[a] = self.__w[a] + ms
+        for weight_i in range(len(self.__w[action_index])):
+            cur_weight = self.__w[action_index][weight_i]
+            new_weight = cur_weight + weight_update[weight_i]
+
+            self.__w[action_index][weight_i] = new_weight
+
+    # def update_fa(self, s, a, s1, r):
+    #     Qsa = self.get_Q(s, a)
+    #     maxQ = self.get_max_Q(s1)
+
+    #     if(np.array_equal(s, s1)):
+    #         print("ERROR: s == s1")
+    #         sys.exit()
+
+    #     # Weight error
+    #     td_delta = (r + self.gamma * maxQ) - Qsa
+
+    #     print(td_delta)
+
+    #     # Multiply by error
+    #     ms = [self.alpha * td_delta * x for x in s]
+
+    #     print(self.__w)
+    #     print(ms)
+
+    #     # Update weights
+    #     self.__w[a] = self.__w[a] + ms
+
+    #     print(self.__w)
+
+    #     input('')
 
         # Round weights
-        self.__w[a] = [np.around(x, 3) for x in self.__w[a]]
+        # self.__w[a] = [np.around(x, 3) for x in self.__w[a]]
+
+    # def update_fa(self, s, a, s1, r):
+    #     Qsa = self.get_Q(s, a)
+    #     maxQ = self.get_max_Q(s1)
+
+    #     if(np.array_equal(s, s1)):
+    #         print("ERROR: s == s1")
+    #         sys.exit()
+
+    #     # print("QSA " + str(Qsa))
+    #     # print("MaxQ " + str(maxQ))
+
+    #     # Weight error
+    #     td_delta = r + (self.gamma * maxQ) - Qsa
+
+    #     print(td_delta)
+
+    #     # Multiply by error
+    #     ms = [self.alpha * td_delta * x for x in s]
+
+    #     # Update weights
+    #     self.__w[a] = self.__w[a] + ms
+
+    #     # Round weights
+    #     # self.__w[a] = [np.around(x, 3) for x in self.__w[a]]
 
     def decay_learning_rate(self, episode):
-        if self.alpha - self.alpha_decay >= self.__min_learning_rate:
-            if self.__decay_step_ctr == self.__step_decay:
-                self.__decay_step_ctr = 0
-                self.alpha = self.alpha - self.alpha_decay
-                return True
-            else:
-                self.__decay_step_ctr = self.__decay_step_ctr + 1
-                return False
-
-                # # 1/t decay
-                # self.alpha = self.alpha_zero / \
-                #     (1 + self.alpha_decay * episode)
+        if self.__decay_step_ctr == self.__step_decay:
+            self.__decay_step_ctr = 0
+            self.alpha -= self.alpha * self.alpha_decay
+            return True
         else:
-            self.alpha = self.__min_learning_rate
+            self.__decay_step_ctr = self.__decay_step_ctr + 1
+            return False
+
+            # # 1/t decay
+            # self.alpha = self.alpha_zero / \
+            #     (1 + self.alpha_decay * episode)

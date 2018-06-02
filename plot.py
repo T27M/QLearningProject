@@ -4,7 +4,7 @@ from scipy.interpolate import spline
 import numpy as np
 import sys
 
-path = './data/lfa/cart-pole-opt/lfa.reward.json'
+path = './data/lfa/cart-pole-noise/lfa.reward.json'
 
 with open(path, 'r') as file:
     data = json.load(file)
@@ -14,7 +14,7 @@ y = np.asarray(list(range(0, len(x))))
 
 # plt.boxplot(x, 0, 'rs', 0)
 plt.plot(x)
-plt.title('Score Over Time (Training) - CartPole - LFA')
+plt.title('Score Over Time (Evaluation) - CartPole (Optimal Weights + Noise) - LFA')
 plt.xlabel('Episode')
 plt.ylabel('Episode Reward')
 
