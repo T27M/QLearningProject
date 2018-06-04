@@ -25,7 +25,7 @@ class QAgent(ConfigBase):
         self.__random_action = self._config['random_action']
 
     def save_q_table(self):
-        self.__QTable.save_q_table()
+        self.__QTable.save_q_table(self._data_dir)
 
     def load_q_table(self):
         self.__QTable.load_q_table('./data/qtable.json')

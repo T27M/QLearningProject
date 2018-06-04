@@ -14,7 +14,7 @@
         ]
     },
     "Environment": {
-        "episodes": 100,
+        "episodes": 500,
         "render": false,
         "action_repeat": 0,
         "gym_environment": "CartPole-v0",

@@ -106,13 +106,16 @@ class Environment(ConfigBase):
 
             self.__reward_list.append(er_dict)
 
-            episode_reward = "Episode " + \
-                str(i) + " reward: " + str(episode_reward)
+            print("\t Episode reward: " + str(episode_reward))
 
             self.__agent.save_q_table()
 
-        with open("./data/qtable/qt.reward.json", "w") as file:
+        with open(self._data_dir + 'qt.reward.json', "w") as file:
             json.dump(self.__reward_list, file)
+
+        x = np.asarray([d['episode_reward'] for d in self.__reward_list])
+
+        print("Best reward: " + str(np.max(x)))
 
         # Clean up
         self.__env.close()

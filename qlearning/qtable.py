@@ -15,10 +15,10 @@ class QTable(object):
         except:
             print("Could not load QTable")
 
-    def save_q_table(self):
-        print('Saving QTable...')
+    def save_q_table(self, path):
+        print('\t Saving QTable...')
 
-        with open('./data/qtable.pickle', 'wb') as file:
+        with open(path + 'qtable.pickle', 'wb') as file:
             pickle.dump(self.__q_table, file)
 
     def get_q_table_len(self):
