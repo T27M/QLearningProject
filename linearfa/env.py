@@ -62,6 +62,9 @@ class Env(object):
 
             s = np.around(s, decimals=3)
 
+            print(s)
+            input('')
+
             while(True):
                 if self.__render:
                     env.render()

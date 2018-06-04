@@ -131,25 +131,7 @@ class LfaQAgent(object):
                 self.__w = pickle.load(file)
                 print('Loaded weights!')
                 print(self.__w)
-
-                print('Adding noise...')
-
-                noise = np.random.normal(0, 5, (2, 4))
-
-                print('Noise:')
-                print(noise)
-
-                self.__w = self.__w + noise
-
-                # Round weights
-                self.__w[0] = [np.around(x, 2) for x in self.__w[0]]
-                self.__w[1] = [np.around(x, 2) for x in self.__w[1]]
-
-                print('Noisey Weights:')
-
-                print(self.__w)
-
-                input('')
+                input('\n Press any key to continue...')
 
         except FileNotFoundError:
             print("Weight file not found")
@@ -198,6 +180,21 @@ class LfaQAgent(object):
             new_weight = cur_weight + weight_update[weight_i]
 
             self.__w[action_index][weight_i] = new_weight
+
+        self.check_fa(s, a, s1, r)
+
+    def check_fa(self, s, a, s1, r):
+        action_index = a
+        Qsa = self.get_Q(s, a)
+        maxQ = self.get_max_Q(s1)
+
+        # Q-Learning
+        q_td = r + np.multiply(self.gamma, maxQ, dtype=np.float64)
+
+        difference = np.subtract(q_td, Qsa, dtype=np.float64)
+
+        weight_update = [
+            np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
 
     # def update_fa(self, s, a, s1, r):
     #     Qsa = self.get_Q(s, a)
