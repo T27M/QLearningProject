@@ -24,11 +24,17 @@ class QAgent(ConfigBase):
         # epsilon - exploration
         self.__random_action = self._config['random_action']
 
+        if self._config['load_q_table']:
+            print('Loading Q-Table from ' +
+                  self._config['q_table_file_path'])
+
+            self.load_q_table(self._config['q_table_file_path'])
+
     def save_q_table(self):
         self.__QTable.save_q_table(self._data_dir)
 
-    def load_q_table(self):
-        self.__QTable.load_q_table('./data/qtable.json')
+    def load_q_table(self, path):
+        self.__QTable.load_q_table(path)
 
         print("Loaded: " + str(self.get_q_table_len()) + " keys")
 

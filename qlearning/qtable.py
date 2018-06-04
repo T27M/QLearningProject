@@ -8,10 +8,11 @@ class QTable(object):
         self.__q_table = {}
         self.__actions = actions
 
-    def load_q_table(self, file_name):
+    def load_q_table(self, path):
         try:
-            with open('./data/qtable.pickle', 'rb') as file:
+            with open(path, 'rb') as file:
                 self.__q_table = pickle.load(file)
+                print('Q-Table Loaded')
         except:
             print("Could not load QTable")
 

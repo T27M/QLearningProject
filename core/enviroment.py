@@ -17,6 +17,8 @@ class Environment(ConfigBase):
         self.__reward = 0
         self.__reward_list = []
 
+        self.__evaluation = self._config['eval']
+
         # Render the game enviroment
         self.__render = self._config['render']
 
@@ -47,7 +49,13 @@ class Environment(ConfigBase):
         for i in range(self.__episodes):
             print('Running Episode: ' + str(i))
 
-            ob = self.__env.reset()
+            s = self.__env.reset()
+
+            if self.__env_is_pacman:
+                # Extract feature vector from observation
+                s = self.__feature_processor.extract_features(s)
+            else:
+                s = np.around(s, decimals=3)
 
             action = 0
             episode_reward = 0
@@ -58,28 +66,18 @@ class Environment(ConfigBase):
                 if self.__render:
                     self.__env.render()
 
-                if self.__env_is_pacman:
-                    # Extract feature vector from observation
-                    state = self.__feature_processor.extract_features(ob)
-                else:
-                    state = np.around(ob, decimals=3)
-
                 # Let agent predict action
-                action = self.__agent.predict(state)
+                action = self.__agent.predict(s)
 
                 # # Perform action with action repeat
                 # for _ in range(self.__action_repeat_count):
-                ob, reward, done, info = self.__env.step(action)
-
-                # Render enviroment
-                if self.__render:
-                    self.__env.render()
+                s1, reward, done, info = self.__env.step(action)
 
                 if self.__env_is_pacman:
                     # Extract feature vector from observation
-                    new_state = self.__feature_processor.extract_features(ob)
+                    s1 = self.__feature_processor.extract_features(s1)
                 else:
-                    new_state = np.around(ob, decimals=3)
+                    s1 = np.around(s1, decimals=3)
 
                 if self.__env_is_pacman:
                     # Determine if the agent lost a life
@@ -88,10 +86,12 @@ class Environment(ConfigBase):
                         cur_life = cur_life - 1
                         reward = -100
 
-                if reward != 0:
+                if not self.__evaluation:
                     # Update Q-Table
-                    self.__agent.update_q_table(
-                        state, new_state, action, reward)
+                    self.__agent.update_q_table(s, s1, action, reward)
+
+                # Pass along state
+                s = s1
 
                 episode_reward += reward
 
@@ -108,7 +108,8 @@ class Environment(ConfigBase):
 
             print("\t Episode reward: " + str(episode_reward))
 
-            self.__agent.save_q_table()
+            if not self.__evaluation:
+                self.__agent.save_q_table()
 
         with open(self._data_dir + 'qt.reward.json', "w") as file:
             json.dump(self.__reward_list, file)
