@@ -49,21 +49,10 @@ class Env(object):
 
             s = env.reset()
 
-            # Agent has control only when play is valid i.e it can move
-            # print('Awaiting control...')
-            # for _ in range(80):
-            #     if self.__render:
-            #         env.render()
-            #     s, reward, done, _ = env.step(0)
-            # print('Agent has control!')
-
             if not self.__random_agent and env_is_pacman:
                 s = fp.extract_features(s)
 
-            s = np.around(s, decimals=3)
-
-            print(s)
-            input('')
+            # s = np.around(s, decimals=3)
 
             while(True):
                 if self.__render:
@@ -85,7 +74,7 @@ class Env(object):
 
                 # Take action
                 s1, reward, done, info = env.step(action)
-                s1 = np.around(s1, decimals=3)
+                # s1 = np.around(s1, decimals=3)
 
                 if not self.__random_agent and env_is_pacman:
                     s1 = fp.extract_features(s1)

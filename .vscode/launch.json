@@ -12,8 +12,13 @@
             "args": [
                 "-e",
                 "5",
-                "-lsw",
-                "cart-pole",
+                "-t",
+                "-lr",
+                "0.1",
+                "-df",
+                "0.9",
+                // "-lsw",
+                // "cart-pole",
                 "-env",
                 "crtp"
             ]

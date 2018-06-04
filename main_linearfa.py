@@ -103,6 +103,7 @@ en = Env(q, render, train, decay, random, environment=environment)
 en.run(episodes)
 
 q.stats()
+q.save_error()
 
 while True:
     key = ""

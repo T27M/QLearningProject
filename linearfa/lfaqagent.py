@@ -30,6 +30,7 @@ class LfaQAgent(object):
         # call(['gnome-terminal', '-x', 'tail -f '])
 
         self.__rewards = []
+        self.__error = []
 
         # Learning rate
         self.alpha = learning_rate
@@ -62,10 +63,9 @@ class LfaQAgent(object):
 
         self.__reward_path = self.__wrk_dir + '/lfa.reward.json'
         self.__weights_path = self.__wrk_dir + '/{}/lfa.weights.pickle'
+        self.__error_path = self.__wrk_dir + '/lfa.error.json'
 
     def stats(self):
-        print('\n Data saved to: ' + self.paths())
-
         print('\n Weights:')
         print(self.weights())
 
@@ -74,6 +74,8 @@ class LfaQAgent(object):
 
         print('\n Avg score/episode:')
         print(str(self.avg_score()))
+
+        print('\n Data saved to: ' + self.paths())
 
     def paths(self):
         return self.__wrk_dir
@@ -109,6 +111,17 @@ class LfaQAgent(object):
 
         with open(self.__reward_path, 'w') as file:
             json.dump(self.__rewards, file)
+
+    def add_error(self, error):
+        er_dict = {
+            'error': error,
+        }
+
+        self.__error.append(er_dict)
+
+    def save_error(self):
+        with open(self.__error_path, 'w') as file:
+            json.dump(self.__error, file)
 
     def weights(self):
         return self.__w
@@ -171,6 +184,10 @@ class LfaQAgent(object):
 
         difference = np.subtract(q_td, Qsa, dtype=np.float64)
 
+        self.d1 = difference
+
+        self.add_error(difference)
+
         weight_update = [
             np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
 
@@ -181,7 +198,7 @@ class LfaQAgent(object):
 
             self.__w[action_index][weight_i] = new_weight
 
-        self.check_fa(s, a, s1, r)
+        # self.check_fa(s, a, s1, r)
 
     def check_fa(self, s, a, s1, r):
         action_index = a
@@ -193,8 +210,14 @@ class LfaQAgent(object):
 
         difference = np.subtract(q_td, Qsa, dtype=np.float64)
 
+        self.d2 = difference
+
         weight_update = [
             np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
+
+        # if self.d2 > self.d1:
+        #     print("Difference previous " + str(self.d1) +
+        #           " Difference now: " + str(self.d2))
 
     # def update_fa(self, s, a, s1, r):
     #     Qsa = self.get_Q(s, a)

@@ -15,15 +15,15 @@ class LinearFaTest(unittest.TestCase):
         s = [0.012, -0.017, 0, -0.009]
         s1 = [-0.041 - 0.047 - 0.036 - 0.034]
 
-        r = 10
+        reward = 10
 
         lfa = LfaQAgent(learning_rate=learning_rate,
                         discount_factor=discount_factor, environment=None)
 
         # Calculate update
-        # ∆w i = α(r + γ max a 0 Q̃(s 0, a 0, w) − Q̃(s, a, w)) δQ̃(s, a, w)
+        # ∆wi = α(r + γ max a'Q̃(s', a', wi) − Q̃(s, a, wi)) δQ̃(s, a, w)/ δwi
 
-        weight_change = learning_rate
+        weight_change = learning_rate * ()
 
         print(np.sum(q_mult, dtype=np.float64))
         print(q_dot)

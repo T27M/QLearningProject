@@ -4,9 +4,6 @@ from qlearning.qtable import QTable
 from core.configbase import ConfigBase
 
 
-# Loss = ∑(Q-target - Q)²
-
-
 class QAgent(ConfigBase):
     def __init__(self, config):
 
@@ -87,13 +84,5 @@ class QAgent(ConfigBase):
             cur_q_value + self.__learning_rate * \
             (reward + self.__discount_factor * new_state_max_q_value - cur_q_value)
 
-        if self._log_output:
-            log_line = str(state) + "\t\t| " + str(action) + "\t\t| " + \
-                str(reward) + "\t\t| " + str(cur_q_value) + \
-                "\t\t| " + str(new_q_value) + "\n"
-
-            with open(self._log_path, 'a') as log:
-                log.write(log_line)
-
-                # Update Q-Table
+        # Update Q-Table
         self.__QTable.update_q_table_value(state, action, new_q_value)

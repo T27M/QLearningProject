@@ -2,6 +2,7 @@ import gym
 from gym import wrappers
 import numpy as np
 import time
+import json
 from core.config import Config
 from core.configbase import ConfigBase
 from core.featureprocessor import FeatureProcessor
@@ -26,15 +27,12 @@ class Environment(ConfigBase):
         self.__feature_processor = feature_processor
         self.__agent = agent
 
-        self.__actions = {
-            'UP': 1,
-            'RIGHT': 2,
-            'LEFT': 3,
-            'DOWN': 4
-        }
+        self.__actions = self._config['actions']
 
         # Number of times to repeat an action - used for frame merging
         self.__action_repeat_count = self._config['action_repeat']
+
+        self.__env_is_pacman = self._config['gym_environment'] == 'MsPacman-v0'
 
         # Create the gym enviroment
         env = gym.make(self._config['gym_environment'])
@@ -60,8 +58,11 @@ class Environment(ConfigBase):
                 if self.__render:
                     self.__env.render()
 
-                # Extract feature vector from observation
-                state = self.__feature_processor.extract_features(ob)
+                if self.__env_is_pacman:
+                    # Extract feature vector from observation
+                    state = self.__feature_processor.extract_features(ob)
+                else:
+                    state = np.around(ob, decimals=3)
 
                 # Let agent predict action
                 action = self.__agent.predict(state)
@@ -74,14 +75,18 @@ class Environment(ConfigBase):
                 if self.__render:
                     self.__env.render()
 
-                # Extract feature vector from observation
-                new_state = self.__feature_processor.extract_features(ob)
+                if self.__env_is_pacman:
+                    # Extract feature vector from observation
+                    new_state = self.__feature_processor.extract_features(ob)
+                else:
+                    new_state = np.around(ob, decimals=3)
 
-                # Determine if the agent lost a life
-                if(cur_life > info['ale.lives']):
-                    print('Lost life')
-                    cur_life = cur_life - 1
-                    reward = -100
+                if self.__env_is_pacman:
+                    # Determine if the agent lost a life
+                    if(cur_life > info['ale.lives']):
+                        print('Lost life')
+                        cur_life = cur_life - 1
+                        reward = -100
 
                 if reward != 0:
                     # Update Q-Table
@@ -94,17 +99,20 @@ class Environment(ConfigBase):
                 if done:
                     break
 
-            self.__reward_list.append(episode_reward)
+            er_dict = {
+                'episode': i,
+                'episode_reward': episode_reward
+            }
+
+            self.__reward_list.append(er_dict)
 
             episode_reward = "Episode " + \
                 str(i) + " reward: " + str(episode_reward)
 
-            with open("./data/reward.txt", "a") as myfile:
-                myfile.writelines(episode_reward)
-
             self.__agent.save_q_table()
 
-        print("Score over time: " + str(sum(self.__reward_list) / self.__episodes))
+        with open("./data/qtable/qt.reward.json", "w") as file:
+            json.dump(self.__reward_list, file)
 
         # Clean up
         self.__env.close()
