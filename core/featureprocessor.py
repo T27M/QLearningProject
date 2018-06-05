@@ -96,10 +96,6 @@ class FeatureProcessor(ConfigBase):
 
         # Parse image and crop
         img = Image.fromarray(observation, 'RGB')
-
-        img.show()
-        input('')
-
         img = img.convert('LA')
         img = img.crop((0, 0, self.__play_area_width, self.__play_area_height))
 
