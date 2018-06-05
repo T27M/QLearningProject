@@ -12,7 +12,6 @@ class QTable(object):
         try:
             with open(path, 'rb') as file:
                 self.__q_table = pickle.load(file)
-                print('Q-Table Loaded')
         except:
             print("Could not load QTable")
 

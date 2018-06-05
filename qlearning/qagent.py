@@ -37,6 +37,7 @@ class QAgent(ConfigBase):
         self.__QTable.load_q_table(path)
 
         print("Loaded: " + str(self.get_q_table_len()) + " keys")
+        input('Q-Table Loaded, press any key to continue...')
 
     def get_q_table_len(self):
         return self.__QTable.get_q_table_len()

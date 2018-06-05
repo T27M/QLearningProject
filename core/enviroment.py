@@ -55,7 +55,7 @@ class Environment(ConfigBase):
                 # Extract feature vector from observation
                 s = self.__feature_processor.extract_features(s)
             else:
-                s = np.around(s, decimals=3)
+                s = np.around(s, decimals=1)
 
             action = 0
             episode_reward = 0
@@ -77,7 +77,7 @@ class Environment(ConfigBase):
                     # Extract feature vector from observation
                     s1 = self.__feature_processor.extract_features(s1)
                 else:
-                    s1 = np.around(s1, decimals=3)
+                    s1 = np.around(s1, decimals=1)
 
                 if self.__env_is_pacman:
                     # Determine if the agent lost a life
@@ -118,6 +118,7 @@ class Environment(ConfigBase):
 
         print("Best reward: " + str(np.max(x)))
 
+        print("Data dir : " + self._data_dir)
         # Clean up
         self.__env.close()
 
