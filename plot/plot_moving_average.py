@@ -14,20 +14,12 @@ def textonly(ax, txt, fontsize=14, loc=2, *args, **kwargs):
                       frameon=True,
                       loc=loc)
     at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
-    at.patch.set_fill(False)
     ax.add_artist(at)
     return at
 
 
-# random_baseline = './data/random/lfa/lfa.reward.json'
-
-random_baseline = './data/random/qtable/100000/qt.reward.json'
-
-path_train = '/home/tom/SCP/qtable/cartpole/08_09_50000/qt.reward-train.json'
-path_test = '/home/tom/SCP/qtable/cartpole/08_09_50000/qt.reward-eval.json'
-
-with open(random_baseline, 'r') as random_file:
-    random_data = json.load(random_file)
+path_train = '/home/tom/SCP/qtable/cartpole/08_09_100000/qt.reward-train.json'
+path_test = '/home/tom/SCP/qtable/cartpole/08_09_100000/qt.reward-eval.json'
 
 with open(path_train, 'r') as train_file:
     traiing_data = json.load(train_file)
@@ -35,15 +27,8 @@ with open(path_train, 'r') as train_file:
 with open(path_test, 'r') as eval_file:
     eval_data = json.load(eval_file)
 
-random_rewards = np.asarray([d['episode_reward'] for d in random_data])
-
 train_rewards = np.asarray([d['episode_reward'] for d in traiing_data])
 eval_rewards = np.asarray([d['episode_reward'] for d in eval_data])
-
-print("Random Avg:" + str(sum(random_rewards) / len(random_rewards)))
-print(np.max(random_rewards))
-
-print('\n')
 
 train_len = len(train_rewards)
 eval_len = len(eval_rewards)
@@ -70,21 +55,20 @@ print('Max Eval:' + str(eval_max))
 
 fig = plt.figure(figsize=(11.69, 8.27))
 
-ax = fig.add_subplot(111)
+N = 100
+cumsum, moving_aves = [0], []
 
+for i, x in enumerate(train_rewards, 1):
+    cumsum.append(cumsum[i-1] + x)
+    if i >= N:
+        moving_ave = (cumsum[i] - cumsum[i-N])/N
+        # can do stuff with moving_ave here
+        moving_aves.append(moving_ave)
 
-bp = ax.boxplot([random_rewards, train_rewards, eval_rewards],
-                showfliers=True,  # outliers
-                notch=False,  # notch shape
-                vert=True,   # vertical box aligmnent
-                patch_artist=False,  # fill with color
-                sym='+')
+plt.plot(train_rewards, label="Agent Score")
+plt.plot(moving_aves, label="Moving Average (per 100 Episode)")
 
-ax.set_xticklabels(['Random Agent', 'Q-Table Training',
-                    'Q-Table Evaluation'], fontsize=18)
-
-ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey',
-              alpha=0.5)
+plt.legend(fontsize=18)
 
 episode = str(eval_len)
 lr = '0.8'
@@ -92,11 +76,11 @@ df = '0.9'
 ra = '0.1'
 
 textonly(plt.gca(), 'Episodes: ' + episode + '\n' +
-         r'$\alpha$:' + lr + '\n' + r'$\gamma$:' + df + '\n' + r'$\epsilon$:' + ra, loc=2)
+         r'$\alpha$:' + lr + '\n' + r'$\gamma$:' + df + '\n' + r'$\epsilon$:' + ra, loc=1)
 
 plt.title(
-    'Results - CartPole using Q-Table', fontsize=18)
-plt.xlabel('Agent', fontsize=18)
+    'CartPole (Training) - using Q-Table', fontsize=18)
+plt.xlabel('Episode', fontsize=18)
 plt.ylabel('Score', fontsize=18)
 
 plt.show()

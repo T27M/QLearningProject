@@ -6,6 +6,7 @@ import json
 import pickle
 import random
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 
 class LfaQAgent(object):
@@ -21,7 +22,8 @@ class LfaQAgent(object):
             self.__w = 0.1 * np.ones((5, 163), dtype=np.float64)
         else:
             # CartPole Feature Weights
-            self.__w = 0.1 * np.ones((2, 4), dtype=np.float64)
+            self.__w = np.random.sample(size=(2, 4))
+            print(self.__w)
 
         self.__rewards = []
 
@@ -34,10 +36,11 @@ class LfaQAgent(object):
 
         # Learning rate
         self.alpha = learning_rate
+        print(self.alpha)
         self.__min_learning_rate = 0.0001
 
         self.alpha_zero = 0.8
-        self.alpha_decay = 0.1
+        self.alpha_decay = 0.5
 
         # Discount factor
         self.gamma = discount_factor
@@ -52,7 +55,7 @@ class LfaQAgent(object):
             # CartPole
             self.__actions = [0, 1]
 
-        self.__step_decay = 50
+        self.__step_decay = 250
         self.__decay_step_ctr = 0
 
     def __gen_dir(self):
@@ -76,6 +79,17 @@ class LfaQAgent(object):
         print(str(self.avg_score()))
 
         print('\n Data saved to: ' + self.paths())
+
+        x = np.asarray([d['error'] for d in self.__error])
+
+        plt.figure(figsize=(11.69, 8.27))
+        plt.plot(x)
+        plt.title(
+            'Error Over Time (Training) - CartPole - LFA', fontsize=18)
+        plt.xlabel('LFA Update Step', fontsize=18)
+        plt.ylabel('Error', fontsize=18)
+
+        plt.show()
 
     def paths(self):
         return self.__wrk_dir
@@ -170,6 +184,12 @@ class LfaQAgent(object):
 
     def update_fa(self, s, a, s1, r):
 
+        # print(s)
+        # print(a)
+        # print(s1)
+        # print(r)
+        # input('')
+
         if(np.array_equal(s, s1)):
             print("ERROR: s == s1")
             sys.exit()
@@ -180,16 +200,13 @@ class LfaQAgent(object):
         maxQ = self.get_max_Q(s1)
 
         # Q-Learning
-        q_td = r + np.multiply(self.gamma, maxQ, dtype=np.float64)
+        q_td = r + self.gamma * maxQ
 
-        difference = np.subtract(q_td, Qsa, dtype=np.float64)
-
-        self.d1 = difference
+        difference = q_td - Qsa
 
         self.add_error(difference)
 
-        weight_update = [
-            np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
+        weight_update = [self.alpha * difference * fi for fi in s]
 
         # Update weights
         for weight_i in range(len(self.__w[action_index])):
@@ -197,27 +214,6 @@ class LfaQAgent(object):
             new_weight = cur_weight + weight_update[weight_i]
 
             self.__w[action_index][weight_i] = new_weight
-
-        # self.check_fa(s, a, s1, r)
-
-    def check_fa(self, s, a, s1, r):
-        action_index = a
-        Qsa = self.get_Q(s, a)
-        maxQ = self.get_max_Q(s1)
-
-        # Q-Learning
-        q_td = r + np.multiply(self.gamma, maxQ, dtype=np.float64)
-
-        difference = np.subtract(q_td, Qsa, dtype=np.float64)
-
-        self.d2 = difference
-
-        weight_update = [
-            np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
-
-        # if self.d2 > self.d1:
-        #     print("Difference previous " + str(self.d1) +
-        #           " Difference now: " + str(self.d2))
 
     # def update_fa(self, s, a, s1, r):
     #     Qsa = self.get_Q(s, a)

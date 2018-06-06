@@ -4,7 +4,7 @@ from scipy.interpolate import spline
 import numpy as np
 import sys
 
-path = './data/lfa/20180604-153743/lfa.error.json'
+path = './data/lfa/20180606-001737/lfa.error.json'
 
 with open(path, 'r') as file:
     data = json.load(file)

@@ -52,8 +52,6 @@ class Env(object):
             if not self.__random_agent and env_is_pacman:
                 s = fp.extract_features(s)
 
-            s = np.around(s, decimals=1)
-
             while(True):
                 if self.__render:
                     env.render()
@@ -74,7 +72,6 @@ class Env(object):
 
                 # Take action
                 s1, reward, done, info = env.step(action)
-                s1 = np.around(s1, decimals=1)
 
                 if not self.__random_agent and env_is_pacman:
                     s1 = fp.extract_features(s1)

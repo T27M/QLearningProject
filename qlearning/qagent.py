@@ -63,6 +63,7 @@ class QAgent(ConfigBase):
         if self.__random_action > random.random():
             # explore enviroment
             random_action = random.sample(self.__actions, 1)
+            # print('Random:' + str(random_action))
 
             return random_action[0]
         else:
