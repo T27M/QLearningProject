@@ -19,7 +19,7 @@ class LfaQAgent(object):
 
         if self.__environment == self.__env_pacman:
             # Pacman Feature weights
-            self.__w = 0.1 * np.ones((5, 163), dtype=np.float64)
+            self.__w = np.random.sample(size=(5, 163))
         else:
             # CartPole Feature Weights
             self.__w = np.random.sample(size=(2, 4))
