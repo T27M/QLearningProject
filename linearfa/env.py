@@ -68,7 +68,6 @@ class Env(object):
                     else:
                         # Use policy
                         action = self.__agent.act(s)
-                        # print('Policy action: ' + str(action))
 
                 # Take action
                 s1, reward, done, info = env.step(action)

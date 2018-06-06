@@ -80,17 +80,6 @@ class LfaQAgent(object):
 
         print('\n Data saved to: ' + self.paths())
 
-        x = np.asarray([d['error'] for d in self.__error])
-
-        plt.figure(figsize=(11.69, 8.27))
-        plt.plot(x)
-        plt.title(
-            'Error Over Time (Training) - CartPole - LFA', fontsize=18)
-        plt.xlabel('LFA Update Step', fontsize=18)
-        plt.ylabel('Error', fontsize=18)
-
-        plt.show()
-
     def paths(self):
         return self.__wrk_dir
 
