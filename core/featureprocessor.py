@@ -93,7 +93,6 @@ class FeatureProcessor(ConfigBase):
 
     # Extract feature vector
     def extract_features(self, observation):
-
         # Parse image and crop
         img = Image.fromarray(observation, 'RGB')
         img = img.convert('LA')

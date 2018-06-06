@@ -21,10 +21,10 @@ def textonly(ax, txt, fontsize=14, loc=2, *args, **kwargs):
 
 # random_baseline = './data/random/lfa/lfa.reward.json'
 
-random_baseline = './data/random/qtable/100000/qt.reward.json'
+random_baseline = './data/random/qtable/pacman-500/qt.reward.json'
 
-path_train = '/home/tom/SCP/qtable/cartpole/08_09_50000/qt.reward-train.json'
-path_test = '/home/tom/SCP/qtable/cartpole/08_09_50000/qt.reward-eval.json'
+path_train = '/home/tom/SCP/qtable/pacman/02_09_500/qt.reward-train.json'
+path_test = '/home/tom/SCP/qtable/pacman/02_09_500/qt.reward-eval.json'
 
 with open(random_baseline, 'r') as random_file:
     random_data = json.load(random_file)
@@ -49,8 +49,10 @@ train_len = len(train_rewards)
 eval_len = len(eval_rewards)
 
 if train_len != eval_len:
-    print('INVALID DATA')
-    sys.exit()
+    print(train_len)
+    print(eval_len)
+
+    input('INVALID DATA? - Are you want to plot this (T=500,E=100)')
 
 train_avg = sum(train_rewards) / train_len
 train_max = np.max(train_rewards)
@@ -80,22 +82,23 @@ bp = ax.boxplot([random_rewards, train_rewards, eval_rewards],
                 patch_artist=False,  # fill with color
                 sym='+')
 
-ax.set_xticklabels(['Random Agent', 'Q-Table Training',
+ax.set_xticklabels(['Random Agent', 'Q-Table Training \n (1000 episode)',
                     'Q-Table Evaluation'], fontsize=18)
+
 
 ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey',
               alpha=0.5)
 
 episode = str(eval_len)
-lr = '0.8'
+lr = '0.2'
 df = '0.9'
 ra = '0.1'
 
-textonly(plt.gca(), 'Episodes: ' + episode + '\n' +
-         r'$\alpha$:' + lr + '\n' + r'$\gamma$:' + df + '\n' + r'$\epsilon$:' + ra, loc=2)
+textonly(plt.gca(), 'Evaluation Episodes: ' + episode + '\n' +
+         r'$\alpha$:' + lr + '\n' + r'$\gamma$:' + df + '\n' + r'$\epsilon$:' + ra, loc=1)
 
 plt.title(
-    'Results - CartPole using Q-Table', fontsize=18)
+    'Results - Pacman using Q-Table', fontsize=18)
 plt.xlabel('Agent', fontsize=18)
 plt.ylabel('Score', fontsize=18)
 

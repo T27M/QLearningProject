@@ -18,8 +18,8 @@ def textonly(ax, txt, fontsize=14, loc=2, *args, **kwargs):
     return at
 
 
-path_train = '/home/tom/SCP/qtable/cartpole/08_09_100000/qt.reward-train.json'
-path_test = '/home/tom/SCP/qtable/cartpole/08_09_100000/qt.reward-eval.json'
+path_train = '/home/tom/SCP/qtable/pacman/02_09_1000/qt.reward-train.json'
+path_test = '/home/tom/SCP/qtable/pacman/02_09_1000/qt.reward-eval.json'
 
 with open(path_train, 'r') as train_file:
     traiing_data = json.load(train_file)
@@ -34,8 +34,10 @@ train_len = len(train_rewards)
 eval_len = len(eval_rewards)
 
 if train_len != eval_len:
-    print('INVALID DATA')
-    sys.exit()
+    print(train_len)
+    print(eval_len)
+
+    input('INVALID DATA? - Are you want to plot this (T=500,E=100)')
 
 train_avg = sum(train_rewards) / train_len
 train_max = np.max(train_rewards)
@@ -70,16 +72,16 @@ plt.plot(moving_aves, label="Moving Average (per 100 Episode)")
 
 plt.legend(fontsize=18)
 
-episode = str(eval_len)
-lr = '0.8'
+episode = str(train_len)
+lr = '0.2'
 df = '0.9'
 ra = '0.1'
 
-textonly(plt.gca(), 'Episodes: ' + episode + '\n' +
+textonly(plt.gca(), 'Training Episodes: ' + episode + '\n' +
          r'$\alpha$:' + lr + '\n' + r'$\gamma$:' + df + '\n' + r'$\epsilon$:' + ra, loc=1)
 
 plt.title(
-    'CartPole (Training) - using Q-Table', fontsize=18)
+    'Pacman (Training) - using Q-Table', fontsize=18)
 plt.xlabel('Episode', fontsize=18)
 plt.ylabel('Score', fontsize=18)
 

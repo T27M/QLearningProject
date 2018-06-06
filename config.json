@@ -9,19 +9,23 @@
         "learning_rate": 0.1,
         "random_action": 1,
         "actions": [
-            0,
-            1
+            1,
+            2,
+            3,
+            4
         ]
     },
     "Environment": {
         "eval": true,
-        "episodes": 100000,
+        "episodes": 1000,
         "render": false,
         "action_repeat": 0,
-        "gym_environment": "CartPole-v0",
+        "gym_environment": "MsPacman-v0",
         "actions": [
-            0,
-            1
+            1,
+            2,
+            3,
+            4
         ]
     },
     "FeatureProcessor": {

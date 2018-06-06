@@ -20,6 +20,7 @@ class LfaQAgent(object):
         if self.__environment == self.__env_pacman:
             # Pacman Feature weights
             self.__w = np.random.sample(size=(5, 163))
+
         else:
             # CartPole Feature Weights
             self.__w = np.random.sample(size=(2, 4))
@@ -189,13 +190,17 @@ class LfaQAgent(object):
         maxQ = self.get_max_Q(s1)
 
         # Q-Learning
-        q_td = r + self.gamma * maxQ
+        q_td = np.add(
+            r,
+            np.multiply(self.gamma, maxQ, dtype=np.float64),
+            dtype=np.float64)
 
-        difference = q_td - Qsa
+        difference = np.subtract(q_td, Qsa, dtype=np.float64)
 
         self.add_error(difference)
 
-        weight_update = [self.alpha * difference * fi for fi in s]
+        weight_update = [
+            np.prod([self.alpha, difference, fi], dtype=np.float64) for fi in s]
 
         # Update weights
         for weight_i in range(len(self.__w[action_index])):
