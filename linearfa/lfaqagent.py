@@ -179,9 +179,9 @@ class LfaQAgent(object):
         # print(r)
         # input('')
 
-        if(np.array_equal(s, s1)):
-            print("ERROR: s == s1")
-            sys.exit()
+        # if(np.array_equal(s, s1)):
+        #     print("ERROR: s == s1")
+        #     sys.exit()
 
         action_index = a
         # print("AI:" + str(action_index))
